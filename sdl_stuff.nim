@@ -36,20 +36,19 @@ proc drawText*(renderer: RendererPtr, font: FontPtr, text: cstring,
   renderer.copy texture, nil, addr r
 
 
-type
-  InputKind* = enum
-    CtrlH
-    CtrlJ
-    CtrlK
-    CtrlL
-    CtrlSpace
-    CtrlBackspace
-    DisplayableCharacter
-    Return
-    Tab
-    ShiftTab
-    Backspace
-    None
+type InputKind* = enum
+  CtrlH
+  CtrlJ
+  CtrlK
+  CtrlL
+  CtrlSpace
+  CtrlBackspace
+  DisplayableCharacter
+  Return
+  Tab
+  ShiftTab
+  Backspace
+  None
 
 type Input* = object
   case kind*: InputKind:
