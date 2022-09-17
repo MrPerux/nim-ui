@@ -15,7 +15,7 @@ type Globals* = object
 
 
 proc draw(globals: Globals, renderer: RendererPtr, font: FontPtr, dt: float32) =
-  renderer.setDrawColor 255, 255, 255, 255 # black # prenk
+  renderer.setDrawColor 8, 21, 27, 255 # dark cyaan
   renderer.clear()
 
   renderer.present()
