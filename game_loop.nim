@@ -9,6 +9,7 @@ import sdl2/ttf
 
 import sdl_stuff
 
+import ui_objects
 
 type Globals* = object
   running*: bool
@@ -17,8 +18,6 @@ type Globals* = object
 proc draw(globals: Globals, renderer: RendererPtr, font: FontPtr, dt: float32) =
   renderer.setDrawColor 8, 21, 27, 255 # dark cyaan
   renderer.clear()
-
-  renderer.present()
 
 
 proc handleInput(globals: var Globals, input: Input) =
@@ -58,6 +57,7 @@ proc main =
   sdlFailIf(not ttfInit()): "SDL_TTF initialization failed"
   defer: ttfQuit()
 
+  let myRoot = initMyRoot(renderer)
 
   # Setup font
   let font = ttf.openFont("Hack Regular Nerd Font Complete.ttf", 16)
@@ -104,5 +104,7 @@ proc main =
         discard
 
     globals.draw(renderer, font, dt)
+    myRoot.draw(Pos(x: 0, y: 0), renderer)
+    renderer.present()
 
 main()
