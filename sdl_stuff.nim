@@ -37,6 +37,7 @@ proc drawText*(renderer: RendererPtr, font: FontPtr, text: cstring,
 
 
 type InputKind* = enum
+  CtrlC
   CtrlH
   CtrlJ
   CtrlK
@@ -91,6 +92,7 @@ func toInput*(key: Scancode, mod_state: Keymod): Input =
   # Ctrl and only ctrl
   elif (mod_state and MOD_CTRL) != 0 and (mod_state and not MOD_CTRL) == 0:
     case key
+    of SDL_SCANCODE_C: Input(kind: CtrlC)
     of SDL_SCANCODE_H: Input(kind: CtrlH)
     of SDL_SCANCODE_J: Input(kind: CtrlJ)
     of SDL_SCANCODE_K: Input(kind: CtrlK)

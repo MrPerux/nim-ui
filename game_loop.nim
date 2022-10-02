@@ -11,7 +11,7 @@ import sdl_stuff
 
 
 type Globals* = object
-  discard
+  running*: bool
 
 
 proc draw(globals: Globals, renderer: RendererPtr, font: FontPtr, dt: float32) =
@@ -24,6 +24,8 @@ proc draw(globals: Globals, renderer: RendererPtr, font: FontPtr, dt: float32) =
 proc handleInput(globals: var Globals, input: Input) =
   if input.kind == None:
     return
+  if input.kind == CtrlC:
+    globals.running = false
   echo $input
 
 
@@ -64,9 +66,7 @@ proc main =
 
   # Gameloop variables
   var
-    running = true
-
-    globals = Globals()
+    globals = Globals(running: true)
 
     dt: float32
 
@@ -76,7 +76,7 @@ proc main =
 
   # Start gameloop
   counter = getPerformanceCounter()
-  while running:
+  while globals.running:
     previousCounter = counter
     counter = getPerformanceCounter()
 
@@ -87,7 +87,7 @@ proc main =
     while pollEvent(event):
       case event.kind
       of QuitEvent:
-        running = false
+        globals.running = false
         break
 
       of TextInput:
