@@ -92,10 +92,6 @@ proc main =
         counter: uint64
         previousCounter: uint64
 
-    # Set hovering state
-    var mouse_x, mouse_y: cint
-    getMouseState(mouse_x, mouse_y)
-    getElementsContaining(globals.hovered, myRoot, pos(mouse_x, mouse_y))
 
     # Start gameloop
     counter = getPerformanceCounter()
@@ -106,6 +102,23 @@ proc main =
         dt = (counter - previousCounter).float / getPerformanceFrequency().float
 
         var event = defaultEvent
+
+        # Set hovering state
+        var new_hovered: seq[UIObject] = @[]
+        var mouse_x, mouse_y: cint
+        getMouseState(mouse_x, mouse_y)
+        for obj in globals.floaters:
+            getElementsContaining(new_hovered, obj, pos(mouse_x, mouse_y) - obj.relative_pos)
+        for obj in new_hovered:
+            if not globals.hovered.contains(obj):
+                obj.is_hovered = true
+                obj.onMouseEnter()
+
+        for obj in globals.hovered:
+            if not new_hovered.contains(obj):
+                obj.is_hovered = false
+                obj.onMouseExit()
+        globals.hovered = new_hovered
 
         while pollEvent(event):
             case event.kind
@@ -122,22 +135,6 @@ proc main =
                 echo "Keydown"
                 globals.handleInput(toInput(event.evKeyboard.keysym.scancode, cast[
                         Keymod](event.evKeyboard.keysym.modstate)))
-
-            # FIXME: Whenever the size of an object changes, it should recheck whether it is hovered or not.
-            of EventType.MouseMotion:
-                var new_hovered: seq[UIObject] = @[]
-                for obj in globals.floaters:
-                    getElementsContaining(new_hovered, obj, pos(event.evMouseMotion.x, event.evMouseMotion.y) - obj.relative_pos)
-                for obj in new_hovered:
-                    if not globals.hovered.contains(obj):
-                        obj.is_hovered = true
-                        obj.onMouseEnter()
-
-                for obj in globals.hovered:
-                    if not new_hovered.contains(obj):
-                        obj.is_hovered = false
-                        obj.onMouseExit()
-                globals.hovered = new_hovered
 
             of EventType.MouseButtonDown:
                 # Go over the hovered items in reversed order and break if an object 'catches' the click
