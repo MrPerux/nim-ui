@@ -66,7 +66,7 @@ type MySidebar* = ref object of UIObject
     # icons: seq[MyIcon]
 
 method draw*(obj: MySidebar, globals: Globals, position: Pos, renderer: RendererPtr) =
-    var background_rect = rect(position.x, position.y, 42, 1080 - 2 * 2) # FIXME: make height dynamic
+    var background_rect = rect(position.x, position.y, 42, globals.height - 2 * 2) # FIXME: make height dynamic
     renderer.setDrawColor(28, 41, 47, 255)
     renderer.fillRect(addr background_rect)
     
@@ -116,11 +116,11 @@ proc loadIcon(renderer: RendererPtr, file: cstring): TexturePtr =
     surface.freeSurface()
     return texture
 
-proc initMyRoot*(renderer: RendererPtr): MyRoot =
+proc initMyRoot*(globals: Globals, renderer: RendererPtr): MyRoot =
     var mySidebar = MySidebar(
         children: @[],
         parent: none[UIObject](),
-        size: Pos(x: 42, y: 1080),
+        size: Pos(x: 42, y: globals.height),
         active_icon_index: 1,
         icons: @[
             loadIcon(renderer, "icons/Animals-Dinosaur-icon.png"),
@@ -139,7 +139,7 @@ proc initMyRoot*(renderer: RendererPtr): MyRoot =
             itself: mySidebar,
             sibling_index: 0)],
         parent: none[UIObject](),
-        size: Pos(x: 1920, y: 1080),
+        size: Pos(x: globals.width, y: globals.height),
         sidebar: mySidebar,
         text: "Hey guys!"
     )

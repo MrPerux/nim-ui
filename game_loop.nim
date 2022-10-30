@@ -61,7 +61,7 @@ proc main =
   sdlFailIf(not ttfInit()): "SDL_TTF initialization failed"
   defer: ttfQuit()
 
-  let myRoot = initMyRoot(renderer)
+  let myRoot = initMyRoot(globals, renderer)
 
   # Setup font
   let font = ttf.openFont("Hack Regular Nerd Font Complete.ttf", 16)
