@@ -14,9 +14,7 @@ proc addChild*(parent: UIObject, new_child: UIObject) =
     parent.children.add(new_child)
 func getAbsolutePosition*(obj: UIObject): Pos =
     if obj.parent.isSome:
-        for child in obj.parent.get().children:
-            if child == obj:
-                return child.relative_pos + getAbsolutePosition(obj.parent.get())
+        return obj.relative_pos + getAbsolutePosition(obj.parent.get())
     else:
         return pos(0, 0)
 method draw*(obj: UIObject, globals: Globals, position: Pos, renderer: RendererPtr) {.base.} = discard
