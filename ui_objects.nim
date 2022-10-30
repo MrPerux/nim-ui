@@ -66,7 +66,7 @@ method draw*(obj: MyIcon, globals: Globals, position: Pos, renderer: RendererPtr
         renderer.copy obj.icon_surface, nil, addr r
 
 method draw*(obj: MySidebar, globals: Globals, position: Pos, renderer: RendererPtr) =
-    var background_rect = rect(position.x, position.y, 42, globals.height - 2 * 2) # FIXME: make height dynamic
+    var background_rect = rect(position.x, position.y, 42, globals.height - 2 * 2)
     renderer.setDrawColor(28, 41, 47, 255)
     renderer.fillRect(addr background_rect)
 
