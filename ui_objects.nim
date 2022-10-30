@@ -16,7 +16,7 @@ func getAbsolutePosition*(obj: UIObject): Pos =
     if obj.parent.isSome:
         return obj.relative_pos + getAbsolutePosition(obj.parent.get())
     else:
-        return pos(0, 0)
+        return obj.relative_pos
 method draw*(obj: UIObject, globals: Globals, position: Pos, renderer: RendererPtr) {.base.} = discard
 method onClick*(obj: UIObject): bool {.base.} = discard
 
