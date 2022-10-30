@@ -55,6 +55,26 @@ proc getElementsContaining*(output: var seq[UIObject], obj: UIObject, relative_p
 
 ### Custom UI elements
 
+type MyHorizontalLayout* = ref object of UIObject
+    discard
+method onChildSizeChange*(parent: MyHorizontalLayout, child: UIObject) =
+    parent.recalculateLayout()
+proc recalculateLayout*(obj: MyHorizontalLayout) =
+    var p = pos(0, 0)
+    var max_height : cint = 0
+    for child in obj.children:
+        child.relative_pos = p
+        p.x += child.size.x
+        max_height = max(max_height, child.size.y)
+    obj.size = pos(p.x, max_height)
+    
+method draw*(obj: MyHorizontalLayout, globals: Globals, position: Pos, renderer: RendererPtr) =
+    for child in obj.children:
+        let x = child.relative_pos.x + position.x
+        let y = child.relative_pos.y + position.y
+        child.draw(globals, pos(x, y), renderer)
+
+
 ## Keyword Text UI element
 type MyKeywordText* = ref object of UIObject
     text*: cstring

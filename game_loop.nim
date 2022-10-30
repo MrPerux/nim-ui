@@ -81,14 +81,21 @@ proc main =
     myPopup.recalculateSizeAfterClickedTimesChange()
     globals.floaters.add(myPopup)
 
-    let myKeywordText = MyKeywordText(
-        text: "let",
+    let myHorizontalTextBoy = MyHorizontalLayout(
         relative_pos: pos(400, 300),
         is_visible_or_interactable: true,
         is_float: true
     )
-    myKeywordText.recalculateSizeAfterTextChange()
-    globals.floaters.add(myKeywordText)
+    let a = [cstring("let"), cstring(" "), cstring("something"), cstring(" "), cstring("="), cstring(" "), cstring("yeah!")]
+    for t in a:
+        let myKeywordText = MyKeywordText(
+            text: t,
+            is_visible_or_interactable: true,
+        )
+        myKeywordText.recalculateSizeAfterTextChange()
+        myHorizontalTextBoy.addChild(myKeywordText)
+    myHorizontalTextBoy.recalculateLayout()
+    globals.floaters.add(myHorizontalTextBoy)
 
 
     # Setup font
