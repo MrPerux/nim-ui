@@ -12,6 +12,8 @@ import sdl_stuff
 import ui_objects
 import globals
 
+import os
+
 proc draw(globals: Globals, renderer: RendererPtr, font: FontPtr, dt: float32) =
   # Background
   renderer.setDrawColor 8, 21, 27, 255 # dark cyaan
@@ -27,7 +29,9 @@ proc handleInput(globals: var Globals, input: Input) =
 
 
 proc main =
-  var globals = Globals(running: true, width: 1920, height: 1023)
+  let WIDTH: cint = if existsEnv("WSL_INTEROP"): 2560 else: 1920
+  let HEIGHT: cint = if existsEnv("WSL_INTEROP"): 1440 else: 1023
+  var globals = Globals(running: true, width: WIDTH, height: HEIGHT)
 
   # SDL Stuff
   sdlFailIf(not sdl2.init(INIT_VIDEO or INIT_TIMER or INIT_EVENTS)):
