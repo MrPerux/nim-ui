@@ -4,6 +4,8 @@ import sdl2/image
 
 import globals
 
+{.experimental: "codeReordering".}
+
 proc addChild(parent: UIObject, new_child: UIObject, relative_position: Pos, is_float: bool = false,
         is_visible_or_interactable: bool = true) =
     parent.children.add(UIChild(
@@ -54,16 +56,11 @@ proc getElementsContaining*(output: var seq[UIObject], obj: UIObject, relative_p
 
 
 ### Custom UI elements
+
 ## Icon UI element
 type MyIcon* = ref object of UIObject
     is_active: bool
     icon_surface: TexturePtr
-
-
-## Sidebar UI element
-type MySidebar* = ref object of UIObject
-    active_icon_index: cint
-    icons: seq[MyIcon]
 
 method draw*(obj: MyIcon, globals: Globals, position: Pos, renderer: RendererPtr) =
     var r = rect(position.x, position.y, 32, 32)
@@ -80,6 +77,18 @@ method draw*(obj: MyIcon, globals: Globals, position: Pos, renderer: RendererPtr
         discard obj.icon_surface.setTextureColorMod(13, 26, 31)
         renderer.copy obj.icon_surface, nil, addr r
 
+method onClick*(obj: MyIcon): bool =
+    echo "CLICKED ICON"
+    var sidebar = cast[MySidebar](obj.parent.get())
+    for icon in sidebar.icons:
+        icon.is_active = icon == obj
+    return true
+
+## Sidebar UI element
+type MySidebar* = ref object of UIObject
+    active_icon_index: cint
+    icons: seq[MyIcon]
+
 method draw*(obj: MySidebar, globals: Globals, position: Pos, renderer: RendererPtr) =
     var background_rect = rect(position.x, position.y, 42, globals.height - 2 * 2)
     renderer.setDrawColor(28, 41, 47, 255)
@@ -89,13 +98,6 @@ method draw*(obj: MySidebar, globals: Globals, position: Pos, renderer: Renderer
         let x = child.relative_pos.x + position.x
         let y = child.relative_pos.y + position.y
         child.itself.draw(globals, pos(x, y), renderer)
-
-method onClick*(obj: MyIcon): bool =
-    echo "CLICKED ICON"
-    var sidebar = cast[MySidebar](obj.parent.get())
-    for icon in sidebar.icons:
-        icon.is_active = icon == obj
-    return true
 
 method onClick*(obj: MySidebar): bool =
     echo "CLICKED SIDEBAR"
