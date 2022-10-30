@@ -75,6 +75,10 @@ proc main =
         counter: uint64
         previousCounter: uint64
 
+    # Set hovering state
+    var mouse_x, mouse_y: cint
+    getMouseState(mouse_x, mouse_y)
+    getElementsContaining(globals.hovered, myRoot, pos(mouse_x, mouse_y))
 
     # Start gameloop
     counter = getPerformanceCounter()
