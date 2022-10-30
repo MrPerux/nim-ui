@@ -80,6 +80,13 @@ method draw*(obj: MySidebar, globals: Globals, position: Pos, renderer: Renderer
         let x = child.relative_pos.x + position.x
         let y = child.relative_pos.y + position.y
         child.itself.draw(globals, pos(x, y), renderer)
+        
+method onClick*(obj: MyIcon): bool =
+    echo "CLICKED ICON"
+    var sidebar = cast[MySidebar](obj.parent.get())
+    for icon in sidebar.icons:
+        icon.is_active = icon == obj
+    return true
 
 method onClick*(obj: MySidebar): bool =
     echo "CLICKED SIDEBAR"
