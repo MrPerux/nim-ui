@@ -111,6 +111,7 @@ proc main =
                 globals.handleInput(toInput(event.evKeyboard.keysym.scancode, cast[
                         Keymod](event.evKeyboard.keysym.modstate)))
 
+            # FIXME: Whenever the size of an object changes, it should recheck whether it is hovered or not.
             of EventType.MouseMotion:
                 var new_hovered: seq[UIObject] = @[]
                 getElementsContaining(new_hovered, myRoot, pos(event.evMouseMotion.x, event.evMouseMotion.y))
