@@ -77,7 +77,7 @@ method draw*(obj: MyHorizontalLayout, globals: Globals, position: Pos, renderer:
 
 ## Keyword Text UI element
 type MyKeywordText* = ref object of UIObject
-    text*: cstring
+    text*: string
 proc recalculateSizeAfterTextChange*(obj: MyKeywordText) =
     let new_size = pos(10 * cast[cint](obj.text.len()), 20)
     if obj.size != new_size:
@@ -85,7 +85,7 @@ proc recalculateSizeAfterTextChange*(obj: MyKeywordText) =
         if obj.parent.isSome:
             onChildSizeChange(obj.parent.get(), obj)
 method draw*(obj: MyKeywordText, globals: Globals, position: Pos, renderer: RendererPtr) =
-    drawText(renderer, globals.font, obj.text, color(240, 140, 140, 255), position.x, position.y)
+    drawText(renderer, globals.font, cstring(obj.text, color(240, 140, 140, 255), position.x, position.y)
 
 
 ## Example Pop-up UI element

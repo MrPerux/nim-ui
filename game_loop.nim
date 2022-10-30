@@ -86,7 +86,7 @@ proc main =
         is_visible_or_interactable: true,
         is_float: true
     )
-    let a = [cstring("let"), cstring(" "), cstring("something"), cstring(" "), cstring("="), cstring(" "), cstring("yeah!")]
+    let a = ["let", " ", "something", " ", "=", " ", "yeah!"]
     for t in a:
         let myKeywordText = MyKeywordText(
             text: t,
