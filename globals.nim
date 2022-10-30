@@ -11,10 +11,13 @@ type Pos* = object
     x*: cint
     y*: cint
 
+func pos*(x: cint, y: cint): Pos =
+    Pos(x: x, y: y)
+
 proc `+`*(a: Pos, b: Pos): Pos =
-    Pos(x: a.x + b.x, y: a.y + b.y)
+    pos(a.x + b.x, a.y + b.y)
 proc `-`*(a: Pos, b: Pos): Pos =
-    Pos(x: a.x - b.x, y: a.y - b.y)
+    pos(a.x - b.x, a.y - b.y)
 
 
 ### Base objects for UI elements

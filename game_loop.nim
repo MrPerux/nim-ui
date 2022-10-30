@@ -105,7 +105,7 @@ proc main =
         discard
 
     globals.draw(renderer, font, dt)
-    myRoot.draw(globals, Pos(x: 0, y: 0), renderer)
+    myRoot.draw(globals, pos(0, 0), renderer)
     renderer.present()
 
 main()

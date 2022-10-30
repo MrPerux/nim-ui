@@ -64,7 +64,7 @@ method draw*(obj: MyRoot, globals: Globals, position: Pos, renderer: RendererPtr
     for child in obj.children:
         let x = child.relative_pos.x + position.x
         let y = child.relative_pos.y + position.y
-        child.itself.draw(globals, Pos(x: x, y: y), renderer)
+        child.itself.draw(globals, pos(x, y), renderer)
 
 method onClick*(obj: MyRoot): bool =
     discard
@@ -89,7 +89,7 @@ proc initMyRoot*(globals: Globals, renderer: RendererPtr): MyRoot =
     var mySidebar = MySidebar(
         children: @[],
         parent: none[UIObject](),
-        size: Pos(x: 42, y: globals.height),
+        size: pos(42, globals.height),
         active_icon_index: 1,
         icons: @[
             loadIcon(renderer, "icons/Animals-Dinosaur-icon.png"),
@@ -102,13 +102,13 @@ proc initMyRoot*(globals: Globals, renderer: RendererPtr): MyRoot =
 
     let myRoot = MyRoot(
         children: @[UIChild(
-            relative_pos: Pos(x: 2, y: 2),
+            relative_pos: pos(2, 2),
             is_float: false,
             is_visible_or_interactable: true,
             itself: mySidebar,
             sibling_index: 0)],
         parent: none[UIObject](),
-        size: Pos(x: globals.width, y: globals.height),
+        size: pos(globals.width, globals.height),
         sidebar: mySidebar,
         text: "Hey guys!"
     )
