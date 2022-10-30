@@ -120,6 +120,15 @@ proc main =
                         obj.onMouseExit()
                 globals.hovered = new_hovered
 
+            of EventType.MouseButtonDown:
+                # Go over the hovered items in reversed order and break if an object 'catches' the click
+                var i = globals.hovered.len() - 1
+                while i >= 0:
+                    # Check if the object 'catches' the click
+                    if globals.hovered[i].onClick():
+                        break
+                    dec(i)
+
             else:
                 discard
 
