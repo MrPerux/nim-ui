@@ -43,6 +43,8 @@ type Globals* = object
 
     selected_text_object*: Option[UIObject]
 
+    text_lines*: seq[UIObject]
+
     debug_should_render_hovered_objects*: bool
     debug_draw_frame_counter*: bool
 

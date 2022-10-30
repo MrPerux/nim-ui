@@ -57,6 +57,24 @@ proc handleInput(globals: var Globals, input: Input) =
                     myKeywordText.recalculateSizeAfterTextChange()
             else:
                 myKeywordText.recalculateSizeAfterTextChange()
+
+    if globals.selected_text_object.isSome and input.kind == InputKind.Keydown and input.is_ascii == false and
+            input.scancode == SDL_SCANCODE_RETURN:
+        let myHorizontalTextBoy = MyHorizontalLayout(
+            relative_pos: pos(globals.text_lines[^1].relative_pos.x, globals.text_lines[^1].relative_pos.y + 20),
+            is_visible_or_interactable: true,
+            is_float: true
+        )
+        let myKeywordText = MyKeywordText(
+            text: "",
+            is_visible_or_interactable: true,
+        )
+        myKeywordText.recalculateSizeAfterTextChange()
+        myHorizontalTextBoy.addChild(myKeywordText)
+        myHorizontalTextBoy.recalculateLayout()
+        globals.floaters.add(myHorizontalTextBoy)
+        globals.text_lines.add(myHorizontalTextBoy)
+        globals.selected_text_object = some[UIObject](myKeywordText)
     echo $input
 
 
@@ -123,6 +141,7 @@ proc main =
     globals.floaters.add(myHorizontalTextBoy)
 
     globals.selected_text_object = some(myHorizontalTextBoy.children[2])
+    globals.text_lines.add(myHorizontalTextBoy)
 
     # Setup font
     let font = ttf.openFont("Hack Regular Nerd Font Complete.ttf", 16)
