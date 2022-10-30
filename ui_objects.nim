@@ -46,33 +46,34 @@ proc getElementsContaining*(output: var seq[UIObject], obj: UIObject, relative_p
 
 ### Custom UI elements
 ## Icon UI element
-# type MyIcon = object of UIObject
-#     is_active: bool
-#     icon_surface: TexturePtr
+type MyIcon = ref object of UIObject
+    is_active: bool
+    icon_surface: TexturePtr
 
 
 ## Sidebar UI element
 type MySidebar* = ref object of UIObject
     active_icon_index: cint
-    icons: seq[TexturePtr]
-    # icons: seq[MyIcon]
+    icons: seq[MyIcon]
+
+method draw*(obj: MyIcon, globals: Globals, position: Pos, renderer: RendererPtr) =
+    var r = rect(position.x, position.y, 32, 32)
+    if obj.is_active:
+        discard obj.icon_surface.setTextureColorMod(255, 255, 255)
+        renderer.copy obj.icon_surface, nil, addr r
+    else:
+        discard obj.icon_surface.setTextureColorMod(13, 26, 31)
+        renderer.copy obj.icon_surface, nil, addr r
 
 method draw*(obj: MySidebar, globals: Globals, position: Pos, renderer: RendererPtr) =
     var background_rect = rect(position.x, position.y, 42, globals.height - 2 * 2) # FIXME: make height dynamic
     renderer.setDrawColor(28, 41, 47, 255)
     renderer.fillRect(addr background_rect)
 
-    var r = rect(position.x + 5, position.y + 5, 32, 32)
-    var i = 0
-    for icon in obj.icons:
-        if i == obj.active_icon_index:
-            discard icon.setTextureColorMod(255, 255, 255)
-            renderer.copy icon, nil, addr r
-        else:
-            discard icon.setTextureColorMod(13, 26, 31)
-            renderer.copy icon, nil, addr r
-        r.y += 40
-        i += 1
+    for child in obj.children:
+        let x = child.relative_pos.x + position.x
+        let y = child.relative_pos.y + position.y
+        child.itself.draw(globals, pos(x, y), renderer)
 
 method onClick*(obj: MySidebar): bool =
     echo "CLICKED SIDEBAR"
@@ -114,14 +115,33 @@ proc initMyRoot*(globals: Globals, renderer: RendererPtr): MyRoot =
         parent: none[UIObject](),
         size: pos(42, globals.height),
         active_icon_index: 1,
-        icons: @[
-            loadIcon(renderer, "icons/Animals-Dinosaur-icon.png"),
-            loadIcon(renderer, "icons/Animals-Dolphin-icon.png"),
-            loadIcon(renderer, "icons/Animals-Shark-icon.png"),
-            loadIcon(renderer, "icons/Animals-Shrimp-icon.png"),
-            loadIcon(renderer, "icons/Animals-Starfish-icon.png"),
-        ]
+        icons: @[]
     )
+    
+    var current_icon_position = pos(5, 5)
+    var icon_index: cint = 0
+    for surface in [loadIcon(renderer, "icons/Animals-Dinosaur-icon.png"),
+                    loadIcon(renderer, "icons/Animals-Dolphin-icon.png"),
+                    loadIcon(renderer, "icons/Animals-Shark-icon.png"),
+                    loadIcon(renderer, "icons/Animals-Shrimp-icon.png"),
+                    loadIcon(renderer, "icons/Animals-Starfish-icon.png")]:
+        var icon = MyIcon(
+            children: @[],
+            parent: some[UIObject](mySidebar),
+            size: pos(32, 32),
+            is_active: false,
+            icon_surface: surface
+        )
+        mySidebar.icons.add(icon)
+        mySidebar.children.add(UIChild(
+            relative_pos: current_icon_position,
+            is_float: false,
+            is_visible_or_interactable: true,
+            itself: icon,
+            sibling_index: icon_index))
+        current_icon_position.y += 40
+        icon_index += 1
+    mySidebar.icons[mySidebar.active_icon_index].is_active = true
 
     let myRoot = MyRoot(
         children: @[UIChild(
