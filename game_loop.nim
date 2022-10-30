@@ -13,6 +13,8 @@ import ui_objects
 
 type Globals* = object
   running*: bool
+  width: cint
+  height: cint
 
 
 proc draw(globals: Globals, renderer: RendererPtr, font: FontPtr, dt: float32) =
@@ -30,6 +32,8 @@ proc handleInput(globals: var Globals, input: Input) =
 
 
 proc main =
+  var globals = Globals(running: true, width: 1920, height: 1023)
+
   # SDL Stuff
   sdlFailIf(not sdl2.init(INIT_VIDEO or INIT_TIMER or INIT_EVENTS)):
     "SDL2 initialization failed"
@@ -39,8 +43,8 @@ proc main =
     title = "Gebruik de pijltjes",
     x = SDL_WINDOWPOS_CENTERED,
     y = SDL_WINDOWPOS_CENTERED,
-    w = 1920,
-    h = 1023,
+    w = globals.width,
+    h = globals.height,
     flags = SDL_WINDOW_SHOWN or SDL_WINDOW_MAXIMIZED or SDL_WINDOW_BORDERLESS or SDL_WINDOW_RESIZABLE
   )
 
@@ -66,8 +70,6 @@ proc main =
 
   # Gameloop variables
   var
-    globals = Globals(running: true)
-
     dt: float32
 
     counter: uint64
