@@ -66,6 +66,18 @@ proc main =
     defer: ttfQuit()
 
     let myRoot = initMyRoot(globals, renderer)
+    globals.floaters.add(myRoot)
+
+    let myPopup = MyPopup(
+        clicked_times: -11,
+        size: pos(0, 28),
+        relative_pos: pos(200, 200),
+        is_visible_or_interactable: true,
+        is_float: true
+    )
+    myPopup.recalculateSizeAfterClickedTimesChange()
+    globals.floaters.add(myPopup)
+
 
     # Setup font
     let font = ttf.openFont("Hack Regular Nerd Font Complete.ttf", 16)
@@ -114,7 +126,8 @@ proc main =
             # FIXME: Whenever the size of an object changes, it should recheck whether it is hovered or not.
             of EventType.MouseMotion:
                 var new_hovered: seq[UIObject] = @[]
-                getElementsContaining(new_hovered, myRoot, pos(event.evMouseMotion.x, event.evMouseMotion.y))
+                for obj in globals.floaters:
+                    getElementsContaining(new_hovered, obj, pos(event.evMouseMotion.x, event.evMouseMotion.y) - obj.relative_pos)
                 for obj in new_hovered:
                     if not globals.hovered.contains(obj):
                         obj.is_hovered = true
@@ -139,7 +152,8 @@ proc main =
                 discard
 
         globals.draw(renderer, font, dt)
-        myRoot.draw(globals, pos(0, 0), renderer)
+        for obj in globals.floaters:
+            obj.draw(globals, obj.relative_pos, renderer)
         if globals.debug_should_render_hovered_objects:
             for obj in globals.hovered:
                 let pos = getAbsolutePosition(obj)

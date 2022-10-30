@@ -37,6 +37,7 @@ type Globals* = object
     width*: cint
     height*: cint
     hovered*: seq[UIObject]
+    floaters*: seq[UIObject]
 
     font*: FontPtr
 
