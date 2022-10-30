@@ -61,13 +61,13 @@ method onChildSizeChange*(parent: MyHorizontalLayout, child: UIObject) =
     parent.recalculateLayout()
 proc recalculateLayout*(obj: MyHorizontalLayout) =
     var p = pos(0, 0)
-    var max_height : cint = 0
+    var max_height: cint = 0
     for child in obj.children:
         child.relative_pos = p
         p.x += child.size.x
         max_height = max(max_height, child.size.y)
     obj.size = pos(p.x, max_height)
-    
+
 method draw*(obj: MyHorizontalLayout, globals: Globals, position: Pos, renderer: RendererPtr) =
     for child in obj.children:
         let x = child.relative_pos.x + position.x
@@ -178,7 +178,7 @@ method draw*(obj: MyRoot, globals: Globals, position: Pos, renderer: RendererPtr
         let x = child.relative_pos.x + position.x
         let y = child.relative_pos.y + position.y
         child.draw(globals, pos(x, y), renderer)
-        
+
     renderer.setDrawColor(14, 14, 14, 255) # Grey lines
     # Right side of sidebar
     renderer.drawLine(
@@ -186,7 +186,7 @@ method draw*(obj: MyRoot, globals: Globals, position: Pos, renderer: RendererPtr
         position.y + 0,
         position.x + obj.sidebar.size.x,
         position.y + obj.sidebar.size.y)
-    
+
     # Below bar
     renderer.setDrawColor(140, 140, 240, 255) # Light magenta below bar
     var below_bar_rect = rect(
@@ -201,7 +201,7 @@ method draw*(obj: MyRoot, globals: Globals, position: Pos, renderer: RendererPtr
         position.y + obj.size.y - 30,
         position.x + obj.size.x,
         position.y + obj.size.y - 30)
-    
+
 
 method onClick*(obj: MyRoot): bool =
     discard

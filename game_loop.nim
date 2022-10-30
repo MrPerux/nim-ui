@@ -39,17 +39,18 @@ proc handleInput(globals: var Globals, input: Input) =
         var myKeywordText = cast[MyKeywordText](globals.selected_text_object.get())
         myKeywordText.text &= input.character
         myKeywordText.recalculateSizeAfterTextChange()
-    if globals.selected_text_object.isSome and input.kind == InputKind.Keydown and input.is_ascii == false and input.scancode == SDL_SCANCODE_BACKSPACE:
+    if globals.selected_text_object.isSome and input.kind == InputKind.Keydown and input.is_ascii == false and
+            input.scancode == SDL_SCANCODE_BACKSPACE:
         var myKeywordText = cast[MyKeywordText](globals.selected_text_object.get())
         if myKeywordText.text.len() > 0:
-            myKeywordText.text = myKeywordText.text[0..< ^1]
-            
+            myKeywordText.text = myKeywordText.text[0 ..< ^1]
+
             let character_left = myKeywordText.text.len() > 0
             if not character_left:
                 assert myKeywordText.parent.isSome()
-                    
+
                 var parent = myKeywordText.parent.get()
-                if myKeywordText.sibling_index > 0: 
+                if myKeywordText.sibling_index > 0:
                     parent.children.delete(myKeywordText.sibling_index)
                     globals.selected_text_object = some(parent.children[myKeywordText.sibling_index - 1])
                 else:
@@ -204,9 +205,10 @@ proc main =
                 var r = rect(pos.x, pos.y, obj.size.x, obj.size.y)
                 renderer.setDrawColor(255, 0, 255, 255)
                 renderer.drawRect(r)
-        
+
         if globals.debug_draw_frame_counter:
-            drawText(renderer, font, cstring("Frame #" & $frame_counter), color(255, 255, 255, 255), myRoot.size.x - 200, 10)
+            drawText(renderer, font, cstring("Frame #" & $frame_counter), color(255, 255, 255, 255), myRoot.size.x -
+                    200, 10)
         renderer.present()
 
         frame_counter += 1
