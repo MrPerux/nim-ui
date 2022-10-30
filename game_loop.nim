@@ -41,7 +41,7 @@ proc main =
     y = SDL_WINDOWPOS_CENTERED,
     w = 1920,
     h = 1023,
-    flags = SDL_WINDOW_SHOWN or SDL_WINDOW_RESIZABLE or SDL_WINDOW_FULLSCREEN
+    flags = SDL_WINDOW_SHOWN or SDL_WINDOW_MAXIMIZED or SDL_WINDOW_BORDERLESS or SDL_WINDOW_RESIZABLE
   )
 
   sdlFailIf window.isNil: "window could not be created"
