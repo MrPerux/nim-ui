@@ -55,7 +55,7 @@ proc getElementsContaining*(output: var seq[UIObject], obj: UIObject, relative_p
 
 ### Custom UI elements
 ## Icon UI element
-type MyIcon = ref object of UIObject
+type MyIcon* = ref object of UIObject
     is_active: bool
     icon_surface: TexturePtr
 
