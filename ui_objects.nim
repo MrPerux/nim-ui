@@ -97,7 +97,7 @@ method draw*(obj: MyPopup, globals: Globals, position: Pos, renderer: RendererPt
     renderer.fillRect(outline)
     renderer.setDrawColor(14, 14, 14, 255)
     renderer.drawRect(outline)
-    drawText(renderer, globals.font, $obj.clicked_times, color(14, 14, 14, 255), position.x + 4, position.y + 4)
+    drawText(renderer, globals.font, cstring($obj.clicked_times), color(14, 14, 14, 255), position.x + 4, position.y + 4)
     discard
 
 method onClick*(obj: MyPopup): bool =
