@@ -165,7 +165,7 @@ proc main =
                 renderer.drawRect(r)
         
         if globals.debug_draw_frame_counter:
-            drawText(renderer, font, "Something: " & $frame_counter, color(255, 255, 255, 255), 600, 10)
+            drawText(renderer, font, "Frame #" & $frame_counter, color(255, 255, 255, 255), myRoot.size.x - 200, 10)
         renderer.present()
 
         frame_counter += 1
