@@ -53,6 +53,15 @@ proc getElementsContaining*(output: var seq[UIObject], obj: UIObject, relative_p
 
 ### Custom UI elements
 
+## Keyword Text UI element
+type MyKeywordText* = ref object of UIObject
+    text*: cstring
+proc recalculateSizeAfterTextChange*(obj: MyKeywordText) =
+    obj.size = pos(10 * cast[cint](obj.text.len()), 20)
+method draw*(obj: MyKeywordText, globals: Globals, position: Pos, renderer: RendererPtr) =
+    drawText(renderer, globals.font, obj.text, color(240, 140, 140, 255), position.x, position.y)
+
+
 ## Example Pop-up UI element
 type MyPopup* = ref object of UIObject
     clicked_times*: cint

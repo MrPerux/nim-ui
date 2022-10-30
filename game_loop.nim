@@ -81,6 +81,15 @@ proc main =
     myPopup.recalculateSizeAfterClickedTimesChange()
     globals.floaters.add(myPopup)
 
+    let myKeywordText = MyKeywordText(
+        text: "let",
+        relative_pos: pos(400, 300),
+        is_visible_or_interactable: true,
+        is_float: true
+    )
+    myKeywordText.recalculateSizeAfterTextChange()
+    globals.floaters.add(myKeywordText)
+
 
     # Setup font
     let font = ttf.openFont("Hack Regular Nerd Font Complete.ttf", 16)
