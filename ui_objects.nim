@@ -85,7 +85,7 @@ proc recalculateSizeAfterTextChange*(obj: MyKeywordText) =
         if obj.parent.isSome:
             onChildSizeChange(obj.parent.get(), obj)
 method draw*(obj: MyKeywordText, globals: Globals, position: Pos, renderer: RendererPtr) =
-    drawText(renderer, globals.font, cstring(obj.text, color(240, 140, 140, 255), position.x, position.y)
+    drawText(renderer, globals.font, cstring(obj.text), color(240, 140, 140, 255), position.x, position.y)
 
 
 ## Example Pop-up UI element
