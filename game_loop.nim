@@ -12,6 +12,8 @@ import sdl_stuff
 import ui_objects
 import globals
 
+import std/options
+
 import os
 
 proc draw(globals: Globals, renderer: RendererPtr, font: FontPtr, dt: float32) =
@@ -32,6 +34,28 @@ proc handleInput(globals: var Globals, input: Input) =
     if input.kind == InputKind.Keydown and input.is_ascii == false and input.mod_ctrl and input.scancode ==
             Scancode.SDL_SCANCODE_F:
         globals.debug_draw_frame_counter = not globals.debug_draw_frame_counter
+
+    if globals.selected_text_object.isSome and input.kind == InputKind.Keydown and input.is_ascii == true:
+        var myKeywordText = cast[MyKeywordText](globals.selected_text_object.get())
+        myKeywordText.text &= input.character
+        myKeywordText.recalculateSizeAfterTextChange()
+    if globals.selected_text_object.isSome and input.kind == InputKind.Keydown and input.is_ascii == false and input.scancode == SDL_SCANCODE_BACKSPACE:
+        var myKeywordText = cast[MyKeywordText](globals.selected_text_object.get())
+        if myKeywordText.text.len() > 0:
+            myKeywordText.text = myKeywordText.text[0..< ^1]
+            
+            let character_left = myKeywordText.text.len() > 0
+            if not character_left:
+                assert myKeywordText.parent.isSome()
+                    
+                var parent = myKeywordText.parent.get()
+                if myKeywordText.sibling_index > 0: 
+                    parent.children.delete(myKeywordText.sibling_index)
+                    globals.selected_text_object = some(parent.children[myKeywordText.sibling_index - 1])
+                else:
+                    myKeywordText.recalculateSizeAfterTextChange()
+            else:
+                myKeywordText.recalculateSizeAfterTextChange()
     echo $input
 
 
@@ -97,6 +121,7 @@ proc main =
     myHorizontalTextBoy.recalculateLayout()
     globals.floaters.add(myHorizontalTextBoy)
 
+    globals.selected_text_object = some(myHorizontalTextBoy.children[2])
 
     # Setup font
     let font = ttf.openFont("Hack Regular Nerd Font Complete.ttf", 16)

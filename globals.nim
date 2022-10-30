@@ -41,6 +41,8 @@ type Globals* = object
 
     font*: FontPtr
 
+    selected_text_object*: Option[UIObject]
+
     debug_should_render_hovered_objects*: bool
     debug_draw_frame_counter*: bool
 
