@@ -59,6 +59,12 @@ type MySidebar* = ref object of UIObject
 method draw*(obj: MyIcon, globals: Globals, position: Pos, renderer: RendererPtr) =
     var r = rect(position.x, position.y, 32, 32)
     if obj.is_active:
+        var active_r = rect(position.x - 5, position.y - 2, 2, 32 + 2 * 2)
+        renderer.setDrawColor(255, 255, 255, 255)
+        renderer.fillRect(active_r)
+        discard obj.icon_surface.setTextureColorMod(255, 255, 255)
+        renderer.copy obj.icon_surface, nil, addr r
+    elif obj.is_hovered:
         discard obj.icon_surface.setTextureColorMod(255, 255, 255)
         renderer.copy obj.icon_surface, nil, addr r
     else:
