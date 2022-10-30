@@ -2,11 +2,13 @@ import std/options
 import sdl2
 import sdl2/image
 
+import sdl_stuff
+
 import globals
 
 {.experimental: "codeReordering".}
 
-proc addChild(parent: UIObject, new_child: UIObject, relative_position: Pos, is_float: bool = false,
+proc addChild*(parent: UIObject, new_child: UIObject, relative_position: Pos, is_float: bool = false,
         is_visible_or_interactable: bool = true) =
     parent.children.add(UIChild(
         relative_pos: relative_position,
@@ -56,6 +58,36 @@ proc getElementsContaining*(output: var seq[UIObject], obj: UIObject, relative_p
 
 
 ### Custom UI elements
+
+## Example Pop-up UI element
+type MyPopup* = ref object of UIObject
+    clicked_times*: cint
+method draw*(obj: MyPopup, globals: Globals, position: Pos, renderer: RendererPtr) =
+    var outline = rect(position.x, position.y, obj.size.x, obj.size.y)
+    renderer.setDrawColor(140, 240, 140, 255)
+    renderer.fillRect(outline)
+    renderer.setDrawColor(14, 14, 14, 255)
+    renderer.drawRect(outline)
+    drawText(renderer, globals.font, $obj.clicked_times, color(14, 14, 14, 255), position.x + 4, position.y + 4)
+    discard
+
+method onClick*(obj: MyPopup): bool =
+    echo "CLICKED POPUP"
+    obj.clicked_times += 1
+    obj.recalculateSizeAfterClickedTimesChange()
+    return true
+func int_str_len(n: cint): cint =
+    var x = n
+    if n < 0:
+        result = 2
+        x = -n
+    else:
+        result = 1
+    while x >= 10:
+        result += 1
+        x = x div 10
+proc recalculateSizeAfterClickedTimesChange*(obj: MyPopup) =
+    obj.size.x = 8 + 10 * int_str_len(obj.clicked_times)
 
 ## Icon UI element
 type MyIcon* = ref object of UIObject
@@ -189,5 +221,12 @@ proc initMyRoot*(globals: Globals, renderer: RendererPtr): MyRoot =
     )
     myRoot.addChild(mySidebar, pos(0, 0))
     mySidebar.parent = some[UIObject](myRoot)
+
+    let myPopup = MyPopup(
+        clicked_times: -11,
+        size: pos(0, 28)
+    )
+    myPopup.recalculateSizeAfterClickedTimesChange()
+    myRoot.addChild(myPopup, pos(200, 200))
 
     return myRoot
