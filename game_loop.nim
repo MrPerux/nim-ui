@@ -153,7 +153,8 @@ proc main =
 
         globals.draw(renderer, font, dt)
         for obj in globals.floaters:
-            obj.draw(globals, obj.relative_pos, renderer)
+            if obj.is_visible_or_interactable:
+                obj.draw(globals, obj.relative_pos, renderer)
         if globals.debug_should_render_hovered_objects:
             for obj in globals.hovered:
                 let pos = getAbsolutePosition(obj)
