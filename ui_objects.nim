@@ -4,6 +4,14 @@ import sdl2/image
 
 import globals
 
+proc addChild(parent: UIObject, new_child: UIObject, relative_position: Pos, is_float: bool = false, is_visible_or_interactable: bool = true) =
+    parent.children.add(UIChild(
+        relative_pos: relative_position,
+        is_float: is_float,
+        is_visible_or_interactable: is_visible_or_interactable,
+        itself: new_child,
+        sibling_index: cast[cint](parent.children.len())))
+    new_child.parent = some(parent)
 func getAbsolutePosition*(obj: UIObject): Pos =
     if obj.parent.isSome:
         for child in obj.parent.get().children:
@@ -132,42 +140,27 @@ proc initMyRoot*(globals: Globals, renderer: RendererPtr): MyRoot =
     )
     
     var current_icon_position = pos(5, 5)
-    var icon_index: cint = 0
     for surface in [loadIcon(renderer, "icons/Animals-Dinosaur-icon.png"),
                     loadIcon(renderer, "icons/Animals-Dolphin-icon.png"),
                     loadIcon(renderer, "icons/Animals-Shark-icon.png"),
                     loadIcon(renderer, "icons/Animals-Shrimp-icon.png"),
                     loadIcon(renderer, "icons/Animals-Starfish-icon.png")]:
         var icon = MyIcon(
-            children: @[],
-            parent: some[UIObject](mySidebar),
             size: pos(32, 32),
             is_active: false,
             icon_surface: surface
         )
         mySidebar.icons.add(icon)
-        mySidebar.children.add(UIChild(
-            relative_pos: current_icon_position,
-            is_float: false,
-            is_visible_or_interactable: true,
-            itself: icon,
-            sibling_index: icon_index))
+        mySidebar.addChild(icon, current_icon_position)
         current_icon_position.y += 40
-        icon_index += 1
     mySidebar.icons[mySidebar.active_icon_index].is_active = true
 
     let myRoot = MyRoot(
-        children: @[UIChild(
-            relative_pos: pos(2, 2),
-            is_float: false,
-            is_visible_or_interactable: true,
-            itself: mySidebar,
-            sibling_index: 0)],
-        parent: none[UIObject](),
         size: pos(globals.width, globals.height),
         sidebar: mySidebar,
         text: "Hey guys!"
     )
+    myRoot.addChild(mySidebar, pos(2, 2))
     mySidebar.parent = some[UIObject](myRoot)
 
     return myRoot
