@@ -223,7 +223,8 @@ proc initMyRoot*(globals: Globals, renderer: RendererPtr): MyRoot =
         clicked_times: -11,
         size: pos(0, 28),
         relative_pos: pos(200, 200),
-        is_visible_or_interactable: true
+        is_visible_or_interactable: true,
+        is_float: true
     )
     myPopup.recalculateSizeAfterClickedTimesChange()
     myRoot.addChild(myPopup)
