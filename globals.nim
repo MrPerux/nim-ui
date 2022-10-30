@@ -40,3 +40,5 @@ type Globals* = object
     height*: cint
     hovered*: seq[UIObject]
 
+    debug_should_render_hovered_objects*: bool
+

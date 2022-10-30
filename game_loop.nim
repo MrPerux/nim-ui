@@ -26,6 +26,9 @@ proc handleInput(globals: var Globals, input: Input) =
     if input.kind == InputKind.Keydown and input.is_ascii == false and input.mod_ctrl and input.scancode ==
             Scancode.SDL_SCANCODE_C:
         globals.running = false
+    if input.kind == InputKind.Keydown and input.is_ascii == false and input.mod_ctrl and input.scancode ==
+            Scancode.SDL_SCANCODE_H:
+        globals.debug_should_render_hovered_objects = not globals.debug_should_render_hovered_objects
     echo $input
 
 
@@ -134,11 +137,12 @@ proc main =
 
         globals.draw(renderer, font, dt)
         myRoot.draw(globals, pos(0, 0), renderer)
-        for obj in globals.hovered:
-            let pos = getAbsolutePosition(obj)
-            var r = rect(pos.x, pos.y, obj.size.x, obj.size.y)
-            renderer.setDrawColor(255, 0, 255, 255)
-            renderer.drawRect(r)
+        if globals.debug_should_render_hovered_objects:
+            for obj in globals.hovered:
+                let pos = getAbsolutePosition(obj)
+                var r = rect(pos.x, pos.y, obj.size.x, obj.size.y)
+                renderer.setDrawColor(255, 0, 255, 255)
+                renderer.drawRect(r)
         renderer.present()
 
 main()
