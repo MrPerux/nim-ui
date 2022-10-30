@@ -42,4 +42,5 @@ type Globals* = object
     font*: FontPtr
 
     debug_should_render_hovered_objects*: bool
+    debug_draw_frame_counter*: bool
 

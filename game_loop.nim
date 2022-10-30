@@ -29,6 +29,9 @@ proc handleInput(globals: var Globals, input: Input) =
     if input.kind == InputKind.Keydown and input.is_ascii == false and input.mod_ctrl and input.scancode ==
             Scancode.SDL_SCANCODE_H:
         globals.debug_should_render_hovered_objects = not globals.debug_should_render_hovered_objects
+    if input.kind == InputKind.Keydown and input.is_ascii == false and input.mod_ctrl and input.scancode ==
+            Scancode.SDL_SCANCODE_F:
+        globals.debug_draw_frame_counter = not globals.debug_draw_frame_counter
     echo $input
 
 
@@ -91,6 +94,8 @@ proc main =
 
         counter: uint64
         previousCounter: uint64
+
+        frame_counter: cint
 
 
     # Start gameloop
@@ -158,6 +163,11 @@ proc main =
                 var r = rect(pos.x, pos.y, obj.size.x, obj.size.y)
                 renderer.setDrawColor(255, 0, 255, 255)
                 renderer.drawRect(r)
+        
+        if globals.debug_draw_frame_counter:
+            drawText(renderer, font, "Something: " & $frame_counter, color(255, 255, 255, 255), 600, 10)
         renderer.present()
+
+        frame_counter += 1
 
 main()
