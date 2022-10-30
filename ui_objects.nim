@@ -214,7 +214,8 @@ proc initMyRoot*(globals: Globals, renderer: RendererPtr): MyRoot =
     let myRoot = MyRoot(
         size: pos(globals.width, globals.height),
         sidebar: mySidebar,
-        text: "Hey guys!"
+        text: "Hey guys!",
+        is_visible_or_interactable: true
     )
     myRoot.addChild(mySidebar)
 
