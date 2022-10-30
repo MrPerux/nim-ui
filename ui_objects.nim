@@ -23,6 +23,8 @@ method onClick*(obj: UIObject): bool {.base.} = discard
 method onMouseEnter*(obj: UIObject) {.base.} = discard
 method onMouseExit*(obj: UIObject) {.base.} = discard
 
+method onChildSizeChange*(parent: UIObject, child: UIObject) {.base.} = discard
+
 proc privateOnClick*(obj: UIObject, relative_pos: Pos) =
     let is_in_obj_bounding_box = (
         relative_pos.x >= 0 and obj.size.x > relative_pos.x
@@ -57,7 +59,11 @@ proc getElementsContaining*(output: var seq[UIObject], obj: UIObject, relative_p
 type MyKeywordText* = ref object of UIObject
     text*: cstring
 proc recalculateSizeAfterTextChange*(obj: MyKeywordText) =
-    obj.size = pos(10 * cast[cint](obj.text.len()), 20)
+    let new_size = pos(10 * cast[cint](obj.text.len()), 20)
+    if obj.size != new_size:
+        obj.size = new_size
+        if obj.parent.isSome:
+            onChildSizeChange(obj.parent.get(), obj)
 method draw*(obj: MyKeywordText, globals: Globals, position: Pos, renderer: RendererPtr) =
     drawText(renderer, globals.font, obj.text, color(240, 140, 140, 255), position.x, position.y)
 
@@ -90,7 +96,11 @@ func int_str_len(n: cint): cint =
         result += 1
         x = x div 10
 proc recalculateSizeAfterClickedTimesChange*(obj: MyPopup) =
-    obj.size.x = 8 + 10 * int_str_len(obj.clicked_times)
+    let new_x = 8 + 10 * int_str_len(obj.clicked_times)
+    if obj.size.x != new_x:
+        obj.size.x = new_x
+        if obj.parent.isSome:
+            onChildSizeChange(obj.parent.get(), obj)
 
 ## Icon UI element
 type MyIcon* = ref object of UIObject
