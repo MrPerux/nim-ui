@@ -4,7 +4,8 @@ import sdl2/image
 
 import globals
 
-proc addChild(parent: UIObject, new_child: UIObject, relative_position: Pos, is_float: bool = false, is_visible_or_interactable: bool = true) =
+proc addChild(parent: UIObject, new_child: UIObject, relative_position: Pos, is_float: bool = false,
+        is_visible_or_interactable: bool = true) =
     parent.children.add(UIChild(
         relative_pos: relative_position,
         is_float: is_float,
@@ -88,7 +89,7 @@ method draw*(obj: MySidebar, globals: Globals, position: Pos, renderer: Renderer
         let x = child.relative_pos.x + position.x
         let y = child.relative_pos.y + position.y
         child.itself.draw(globals, pos(x, y), renderer)
-        
+
 method onClick*(obj: MyIcon): bool =
     echo "CLICKED ICON"
     var sidebar = cast[MySidebar](obj.parent.get())
@@ -138,7 +139,7 @@ proc initMyRoot*(globals: Globals, renderer: RendererPtr): MyRoot =
         active_icon_index: 1,
         icons: @[]
     )
-    
+
     var current_icon_position = pos(5, 5)
     for surface in [loadIcon(renderer, "icons/Animals-Dinosaur-icon.png"),
                     loadIcon(renderer, "icons/Animals-Dolphin-icon.png"),
