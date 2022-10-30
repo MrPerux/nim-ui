@@ -22,15 +22,12 @@ proc `-`*(a: Pos, b: Pos): Pos =
 
 
 ### Base objects for UI elements
-type UIChild* = object
+type UIObject* = ref object of RootObj
     relative_pos*: Pos
     is_float*: bool
     is_visible_or_interactable*: bool
-    itself*: UIObject
     sibling_index*: cint
-
-type UIObject* = ref object of RootObj
-    children*: seq[UIChild]
+    children*: seq[UIObject]
     parent*: Option[UIObject]
     size*: Pos
     is_hovered*: bool

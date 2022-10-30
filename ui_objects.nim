@@ -8,19 +8,14 @@ import globals
 
 {.experimental: "codeReordering".}
 
-proc addChild*(parent: UIObject, new_child: UIObject, relative_position: Pos, is_float: bool = false,
-        is_visible_or_interactable: bool = true) =
-    parent.children.add(UIChild(
-        relative_pos: relative_position,
-        is_float: is_float,
-        is_visible_or_interactable: is_visible_or_interactable,
-        itself: new_child,
-        sibling_index: cast[cint](parent.children.len())))
+proc addChild*(parent: UIObject, new_child: UIObject) =
+    new_child.sibling_index = cast[cint](parent.children.len())
     new_child.parent = some(parent)
+    parent.children.add(new_child)
 func getAbsolutePosition*(obj: UIObject): Pos =
     if obj.parent.isSome:
         for child in obj.parent.get().children:
-            if child.itself == obj:
+            if child == obj:
                 return child.relative_pos + getAbsolutePosition(obj.parent.get())
     else:
         return pos(0, 0)
@@ -41,7 +36,7 @@ proc privateOnClick*(obj: UIObject, relative_pos: Pos) =
             return
     for child in obj.children:
         if child.is_visible_or_interactable:
-            privateOnClick(child.itself, relative_pos - child.relative_pos)
+            privateOnClick(child, relative_pos - child.relative_pos)
 
 
 proc getElementsContaining*(output: var seq[UIObject], obj: UIObject, relative_pos: Pos) =
@@ -54,7 +49,7 @@ proc getElementsContaining*(output: var seq[UIObject], obj: UIObject, relative_p
         output.add(obj)
     for child in obj.children:
         if child.is_visible_or_interactable:
-            getElementsContaining(output, child.itself, relative_pos - child.relative_pos)
+            getElementsContaining(output, child, relative_pos - child.relative_pos)
 
 
 ### Custom UI elements
@@ -129,7 +124,7 @@ method draw*(obj: MySidebar, globals: Globals, position: Pos, renderer: Renderer
     for child in obj.children:
         let x = child.relative_pos.x + position.x
         let y = child.relative_pos.y + position.y
-        child.itself.draw(globals, pos(x, y), renderer)
+        child.draw(globals, pos(x, y), renderer)
 
 method onClick*(obj: MySidebar): bool =
     echo "CLICKED SIDEBAR"
@@ -144,7 +139,7 @@ method draw*(obj: MyRoot, globals: Globals, position: Pos, renderer: RendererPtr
     for child in obj.children:
         let x = child.relative_pos.x + position.x
         let y = child.relative_pos.y + position.y
-        child.itself.draw(globals, pos(x, y), renderer)
+        child.draw(globals, pos(x, y), renderer)
         
     renderer.setDrawColor(14, 14, 14, 255) # Grey lines
     # Right side of sidebar
@@ -195,7 +190,9 @@ proc initMyRoot*(globals: Globals, renderer: RendererPtr): MyRoot =
         parent: none[UIObject](),
         size: pos(42, globals.height),
         active_icon_index: 1,
-        icons: @[]
+        relative_pos: pos(0, 0),
+        icons: @[],
+        is_visible_or_interactable: true
     )
 
     var current_icon_position = pos(5, 5)
@@ -207,10 +204,12 @@ proc initMyRoot*(globals: Globals, renderer: RendererPtr): MyRoot =
         var icon = MyIcon(
             size: pos(32, 32),
             is_active: false,
-            icon_surface: surface
+            icon_surface: surface,
+            relative_pos: current_icon_position,
+            is_visible_or_interactable: true
         )
         mySidebar.icons.add(icon)
-        mySidebar.addChild(icon, current_icon_position)
+        mySidebar.addChild(icon)
         current_icon_position.y += 40
     mySidebar.icons[mySidebar.active_icon_index].is_active = true
 
@@ -219,14 +218,16 @@ proc initMyRoot*(globals: Globals, renderer: RendererPtr): MyRoot =
         sidebar: mySidebar,
         text: "Hey guys!"
     )
-    myRoot.addChild(mySidebar, pos(0, 0))
+    myRoot.addChild(mySidebar)
     mySidebar.parent = some[UIObject](myRoot)
 
     let myPopup = MyPopup(
         clicked_times: -11,
-        size: pos(0, 28)
+        size: pos(0, 28),
+        relative_pos: pos(200, 200),
+        is_visible_or_interactable: true
     )
     myPopup.recalculateSizeAfterClickedTimesChange()
-    myRoot.addChild(myPopup, pos(200, 200))
+    myRoot.addChild(myPopup)
 
     return myRoot
