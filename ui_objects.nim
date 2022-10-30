@@ -2,6 +2,8 @@ import std/options
 import sdl2
 import sdl2/image
 
+import globals
+
 {.experimental: "codeReordering".}
 
 # every object (position) has a global position
@@ -33,8 +35,7 @@ type UIObject = ref object of RootObj
     parent: Option[UIObject]
     size: Pos
 
-method draw*(obj: UIObject, position: Pos,
-        renderer: RendererPtr) {.base.} = discard
+method draw*(obj: UIObject, globals: Globals, position: Pos, renderer: RendererPtr) {.base.} = discard
 method onClick*(obj: UIObject): bool {.base.} = discard
 
 proc privateOnClick*(obj: UIObject, relative_pos: Pos) =
@@ -64,7 +65,7 @@ type MySidebar* = ref object of UIObject
     icons: seq[TexturePtr]
     # icons: seq[MyIcon]
 
-method draw*(obj: MySidebar, position: Pos, renderer: RendererPtr) =
+method draw*(obj: MySidebar, globals: Globals, position: Pos, renderer: RendererPtr) =
     var background_rect = rect(position.x, position.y, 42, 1080 - 2 * 2) # FIXME: make height dynamic
     renderer.setDrawColor(28, 41, 47, 255)
     renderer.fillRect(addr background_rect)
@@ -90,11 +91,11 @@ type MyRoot* = ref object of UIObject
     sidebar: MySidebar
     text: string
 
-method draw*(obj: MyRoot, position: Pos, renderer: RendererPtr) =
+method draw*(obj: MyRoot, globals: Globals, position: Pos, renderer: RendererPtr) =
     for child in obj.children:
         let x = child.relative_pos.x + position.x
         let y = child.relative_pos.y + position.y
-        child.itself.draw(Pos(x: x, y: y), renderer)
+        child.itself.draw(globals, Pos(x: x, y: y), renderer)
 
 method onClick*(obj: MyRoot): bool =
     discard

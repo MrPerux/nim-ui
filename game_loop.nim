@@ -10,12 +10,7 @@ import sdl2/ttf
 import sdl_stuff
 
 import ui_objects
-
-type Globals* = object
-  running*: bool
-  width: cint
-  height: cint
-
+import globals
 
 proc draw(globals: Globals, renderer: RendererPtr, font: FontPtr, dt: float32) =
   # Background
@@ -106,7 +101,7 @@ proc main =
         discard
 
     globals.draw(renderer, font, dt)
-    myRoot.draw(Pos(x: 0, y: 0), renderer)
+    myRoot.draw(globals, Pos(x: 0, y: 0), renderer)
     renderer.present()
 
 main()
