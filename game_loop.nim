@@ -23,7 +23,8 @@ proc draw(globals: Globals, renderer: RendererPtr, font: FontPtr, dt: float32) =
 proc handleInput(globals: var Globals, input: Input) =
     if input.kind == None:
         return
-    if input.kind == InputKind.Keydown and input.is_ascii == false and input.mod_ctrl and input.scancode == Scancode.SDL_SCANCODE_C:
+    if input.kind == InputKind.Keydown and input.is_ascii == false and input.mod_ctrl and input.scancode ==
+            Scancode.SDL_SCANCODE_C:
         globals.running = false
     echo $input
 
@@ -100,7 +101,7 @@ proc main =
                 echo "Keydown"
                 globals.handleInput(toInput(event.evKeyboard.keysym.scancode, cast[
                         Keymod](event.evKeyboard.keysym.modstate)))
-        
+
             of EventType.MouseMotion:
                 var new_hovered: seq[UIObject] = @[]
                 getElementsContaining(new_hovered, myRoot, pos(event.evMouseMotion.x, event.evMouseMotion.y))

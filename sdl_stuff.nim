@@ -67,10 +67,12 @@ const
 func toInput*(c: char, mod_state: Keymod): Input =
     const table = isDisplayableAsciiCharacterMap()
     if cast[cint](c) in 0..127 and table[cast[cint](c)]:
-        Input(kind: Keydown, is_ascii: true, character: c, scancode: cast[Scancode](0), mod_shift: bool(mod_state and MOD_SHIFT), mod_ctrl: bool(mod_state and MOD_CTRL), mod_alt: bool(mod_state and MOD_ALT))
+        Input(kind: Keydown, is_ascii: true, character: c, scancode: cast[Scancode](0), mod_shift: bool(mod_state and
+                MOD_SHIFT), mod_ctrl: bool(mod_state and MOD_CTRL), mod_alt: bool(mod_state and MOD_ALT))
     else:
         Input(kind: None)
 
 
 func toInput*(key: Scancode, mod_state: Keymod): Input =
-    Input(kind: Keydown, is_ascii: false, character: cast[char](0), scancode: key, mod_shift: bool(mod_state and MOD_SHIFT), mod_ctrl: bool(mod_state and MOD_CTRL), mod_alt: bool(mod_state and MOD_ALT))
+    Input(kind: Keydown, is_ascii: false, character: cast[char](0), scancode: key, mod_shift: bool(mod_state and
+            MOD_SHIFT), mod_ctrl: bool(mod_state and MOD_CTRL), mod_alt: bool(mod_state and MOD_ALT))

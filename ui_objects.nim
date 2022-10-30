@@ -22,7 +22,7 @@ proc privateOnClick*(obj: UIObject, relative_pos: Pos) =
         relative_pos.x >= 0 and obj.size.x > relative_pos.x
     ) and (
         relative_pos.y >= 0 and obj.size.y > relative_pos.y
-    ) 
+    )
     if is_in_obj_bounding_box:
         if obj.onClick():
             return
@@ -61,7 +61,7 @@ method draw*(obj: MySidebar, globals: Globals, position: Pos, renderer: Renderer
     var background_rect = rect(position.x, position.y, 42, globals.height - 2 * 2) # FIXME: make height dynamic
     renderer.setDrawColor(28, 41, 47, 255)
     renderer.fillRect(addr background_rect)
-    
+
     var r = rect(position.x + 5, position.y + 5, 32, 32)
     var i = 0
     for icon in obj.icons:
@@ -73,7 +73,7 @@ method draw*(obj: MySidebar, globals: Globals, position: Pos, renderer: Renderer
             renderer.copy icon, nil, addr r
         r.y += 40
         i += 1
-    
+
 method onClick*(obj: MySidebar): bool =
     echo "CLICKED SIDEBAR"
 
@@ -94,9 +94,9 @@ method onClick*(obj: MyRoot): bool =
 
 
 ### Initializing procedures for ui elements
-proc loadIcon(renderer: RendererPtr, file: cstring): TexturePtr = 
+proc loadIcon(renderer: RendererPtr, file: cstring): TexturePtr =
     let surface = load(file)
-    var pixels = cast [ptr array[0..(512*512),uint32]](surface.pixels)
+    var pixels = cast [ptr array[0..(512*512), uint32]](surface.pixels)
     # echo surface.h, surface.w,surface.pitch
     for y in 0..(surface.h-1):
         for x in 0..(surface.w-1):

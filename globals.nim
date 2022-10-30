@@ -35,8 +35,8 @@ type UIObject* = ref object of RootObj
     is_hovered*: bool
 
 type Globals* = object
-  running*: bool
-  width*: cint
-  height*: cint
-  hovered*: seq[UIObject]
+    running*: bool
+    width*: cint
+    height*: cint
+    hovered*: seq[UIObject]
 
