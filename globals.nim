@@ -1,4 +1,5 @@
 import std/options
+import sdl2/ttf
 
 {.experimental: "codeReordering".}
 
@@ -39,6 +40,8 @@ type Globals* = object
     width*: cint
     height*: cint
     hovered*: seq[UIObject]
+
+    font*: FontPtr
 
     debug_should_render_hovered_objects*: bool
 

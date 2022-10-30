@@ -71,6 +71,8 @@ proc main =
     let font = ttf.openFont("Hack Regular Nerd Font Complete.ttf", 16)
     sdlFailIf font.isNil: "font could not be created"
 
+    globals.font = font
+
     # Gameloop variables
     var
         dt: float32
