@@ -45,9 +45,9 @@ proc getElementsContaining*(output: var seq[UIObject], obj: UIObject, relative_p
     )
     if is_in_obj_bounding_box:
         output.add(obj)
-    for child in obj.children:
-        if child.is_visible_or_interactable:
-            getElementsContaining(output, child, relative_pos - child.relative_pos)
+        for child in obj.children:
+            if child.is_visible_or_interactable:
+                getElementsContaining(output, child, relative_pos - child.relative_pos)
 
 
 ### Custom UI elements
