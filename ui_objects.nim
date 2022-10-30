@@ -4,8 +4,18 @@ import sdl2/image
 
 import globals
 
+func getAbsolutePosition*(obj: UIObject): Pos =
+    if obj.parent.isSome:
+        for child in obj.parent.get().children:
+            if child.itself == obj:
+                return child.relative_pos + getAbsolutePosition(obj.parent.get())
+    else:
+        return pos(0, 0)
 method draw*(obj: UIObject, globals: Globals, position: Pos, renderer: RendererPtr) {.base.} = discard
 method onClick*(obj: UIObject): bool {.base.} = discard
+
+method onMouseEnter*(obj: UIObject) {.base.} = discard
+method onMouseExit*(obj: UIObject) {.base.} = discard
 
 proc privateOnClick*(obj: UIObject, relative_pos: Pos) =
     let is_in_obj_bounding_box = (
@@ -19,6 +29,19 @@ proc privateOnClick*(obj: UIObject, relative_pos: Pos) =
     for child in obj.children:
         if child.is_visible_or_interactable:
             privateOnClick(child.itself, relative_pos - child.relative_pos)
+
+
+proc getElementsContaining*(output: var seq[UIObject], obj: UIObject, relative_pos: Pos) =
+    let is_in_obj_bounding_box = (
+        relative_pos.x >= 0 and obj.size.x > relative_pos.x
+    ) and (
+        relative_pos.y >= 0 and obj.size.y > relative_pos.y
+    )
+    if is_in_obj_bounding_box:
+        output.add(obj)
+    for child in obj.children:
+        if child.is_visible_or_interactable:
+            getElementsContaining(output, child.itself, relative_pos - child.relative_pos)
 
 
 ### Custom UI elements

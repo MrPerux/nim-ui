@@ -32,9 +32,11 @@ type UIObject* = ref object of RootObj
     children*: seq[UIChild]
     parent*: Option[UIObject]
     size*: Pos
+    is_hovered*: bool
 
 type Globals* = object
   running*: bool
   width*: cint
   height*: cint
+  hovered*: seq[UIObject]
 

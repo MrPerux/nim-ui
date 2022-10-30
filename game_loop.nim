@@ -100,12 +100,31 @@ proc main =
         echo "Keydown"
         globals.handleInput(toInput(event.evKeyboard.keysym.scancode, cast[
             Keymod](event.evKeyboard.keysym.modstate)))
+    
+      of EventType.MouseMotion:
+        var new_hovered: seq[UIObject] = @[]
+        getElementsContaining(new_hovered, myRoot, pos(event.evMouseMotion.x, event.evMouseMotion.y))
+        for obj in new_hovered:
+          if not globals.hovered.contains(obj):
+            obj.is_hovered = true
+            obj.onMouseEnter()
+
+        for obj in globals.hovered:
+          if not new_hovered.contains(obj):
+            obj.is_hovered = false
+            obj.onMouseExit()
+        globals.hovered = new_hovered
 
       else:
         discard
 
     globals.draw(renderer, font, dt)
     myRoot.draw(globals, pos(0, 0), renderer)
+    for obj in globals.hovered:
+      let pos = getAbsolutePosition(obj)
+      var r = rect(pos.x, pos.y, obj.size.x, obj.size.y)
+      renderer.setDrawColor(255, 0, 255, 255)
+      renderer.drawRect(r)
     renderer.present()
 
 main()
