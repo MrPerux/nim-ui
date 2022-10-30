@@ -90,7 +90,7 @@ type MySidebar* = ref object of UIObject
     icons: seq[MyIcon]
 
 method draw*(obj: MySidebar, globals: Globals, position: Pos, renderer: RendererPtr) =
-    var background_rect = rect(position.x, position.y, 42, globals.height - 2 * 2)
+    var background_rect = rect(position.x, position.y, obj.size.x, obj.size.y)
     renderer.setDrawColor(28, 41, 47, 255)
     renderer.fillRect(addr background_rect)
 
@@ -113,6 +113,30 @@ method draw*(obj: MyRoot, globals: Globals, position: Pos, renderer: RendererPtr
         let x = child.relative_pos.x + position.x
         let y = child.relative_pos.y + position.y
         child.itself.draw(globals, pos(x, y), renderer)
+        
+    renderer.setDrawColor(14, 14, 14, 255) # Grey lines
+    # Right side of sidebar
+    renderer.drawLine(
+        position.x + obj.sidebar.size.x,
+        position.y + 0,
+        position.x + obj.sidebar.size.x,
+        position.y + obj.sidebar.size.y)
+    
+    # Below bar
+    renderer.setDrawColor(140, 140, 240, 255) # Light magenta below bar
+    var below_bar_rect = rect(
+        position.x + 0,
+        position.y + obj.size.y - 30,
+        obj.size.x,
+        30)
+    renderer.fillRect(below_bar_rect)
+    renderer.setDrawColor(14, 14, 14, 255) # Grey lines
+    renderer.drawLine(
+        position.x + 0,
+        position.y + obj.size.y - 30,
+        position.x + obj.size.x,
+        position.y + obj.size.y - 30)
+    
 
 method onClick*(obj: MyRoot): bool =
     discard
@@ -163,7 +187,7 @@ proc initMyRoot*(globals: Globals, renderer: RendererPtr): MyRoot =
         sidebar: mySidebar,
         text: "Hey guys!"
     )
-    myRoot.addChild(mySidebar, pos(2, 2))
+    myRoot.addChild(mySidebar, pos(0, 0))
     mySidebar.parent = some[UIObject](myRoot)
 
     return myRoot
