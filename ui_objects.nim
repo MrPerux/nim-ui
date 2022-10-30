@@ -217,7 +217,6 @@ proc initMyRoot*(globals: Globals, renderer: RendererPtr): MyRoot =
         text: "Hey guys!"
     )
     myRoot.addChild(mySidebar)
-    mySidebar.parent = some[UIObject](myRoot)
 
     let myPopup = MyPopup(
         clicked_times: -11,
