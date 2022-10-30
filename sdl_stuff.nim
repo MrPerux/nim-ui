@@ -37,25 +37,20 @@ proc drawText*(renderer: RendererPtr, font: FontPtr, text: cstring,
 
 
 type InputKind* = enum
-  CtrlC
-  CtrlH
-  CtrlJ
-  CtrlK
-  CtrlL
-  CtrlSpace
-  CtrlBackspace
-  DisplayableCharacter
-  Return
-  Tab
-  ShiftTab
-  Backspace
+  Keydown
   None
+
 
 type Input* = object
   case kind*: InputKind:
-  of DisplayableCharacter:
-    character: char
-  else:
+  of Keydown:
+    is_ascii*: bool
+    character*: char
+    scancode*: Scancode
+    mod_shift*: bool
+    mod_ctrl*: bool
+    mod_alt*: bool
+  of None:
     nil
 
 
@@ -64,42 +59,18 @@ func isDisplayableAsciiCharacterMap(): array[0..127, bool] =
     result[cast[cint](c)] = true
 
 
-func toInput*(c: char): Input =
+const
+  MOD_SHIFT = KMOD_LSHIFT or KMOD_RSHIFT
+  MOD_CTRL = KMOD_LCTRL or KMOD_RCTRL
+  MOD_ALT = KMOD_LALT or KMOD_RALT
+
+func toInput*(c: char, mod_state: Keymod): Input =
   const table = isDisplayableAsciiCharacterMap()
   if cast[cint](c) in 0..127 and table[cast[cint](c)]:
-    Input(kind: DisplayableCharacter, character: c)
+    Input(kind: Keydown, is_ascii: true, character: c, scancode: cast[Scancode](0), mod_shift: bool(mod_state and MOD_SHIFT), mod_ctrl: bool(mod_state and MOD_CTRL), mod_alt: bool(mod_state and MOD_ALT))
   else:
     Input(kind: None)
 
 
 func toInput*(key: Scancode, mod_state: Keymod): Input =
-  let
-    MOD_SHIFT = KMOD_LSHIFT or KMOD_RSHIFT
-    MOD_CTRL = KMOD_LCTRL or KMOD_RCTRL
-
-  # Only shift and no mod
-  if (mod_state and not MOD_SHIFT) == 0:
-    case key:
-      of SDL_SCANCODE_RETURN: Input(kind: Return)
-      of SDL_SCANCODE_BACKSPACE: Input(kind: Backspace)
-      of SDL_SCANCODE_TAB:
-        if (mod_state and MOD_SHIFT) == 0:
-          Input(kind: Tab)
-        else:
-          Input(kind: ShiftTab)
-      else: Input(kind: None)
-
-  # Ctrl and only ctrl
-  elif (mod_state and MOD_CTRL) != 0 and (mod_state and not MOD_CTRL) == 0:
-    case key
-    of SDL_SCANCODE_C: Input(kind: CtrlC)
-    of SDL_SCANCODE_H: Input(kind: CtrlH)
-    of SDL_SCANCODE_J: Input(kind: CtrlJ)
-    of SDL_SCANCODE_K: Input(kind: CtrlK)
-    of SDL_SCANCODE_L: Input(kind: CtrlL)
-    of SDL_SCANCODE_SPACE: Input(kind: CtrlSpace)
-    of SDL_SCANCODE_BACKSPACE: Input(kind: CtrlBackspace)
-    else: Input(kind: None)
-
-  else:
-    Input(kind: None)
+  Input(kind: Keydown, is_ascii: false, character: cast[char](0), scancode: key, mod_shift: bool(mod_state and MOD_SHIFT), mod_ctrl: bool(mod_state and MOD_CTRL), mod_alt: bool(mod_state and MOD_ALT))

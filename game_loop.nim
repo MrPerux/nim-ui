@@ -23,7 +23,7 @@ proc draw(globals: Globals, renderer: RendererPtr, font: FontPtr, dt: float32) =
 proc handleInput(globals: var Globals, input: Input) =
   if input.kind == None:
     return
-  if input.kind == CtrlC:
+  if input.kind == InputKind.Keydown and input.is_ascii == false and input.mod_ctrl and input.scancode == Scancode.SDL_SCANCODE_C:
     globals.running = false
   echo $input
 
@@ -94,9 +94,9 @@ proc main =
       of TextInput:
         let c = event.evTextInput.text[0]
         echo "TextInput"
-        globals.handleInput(toInput(c))
+        globals.handleInput(toInput(c, getModState()))
 
-      of KeyDown:
+      of EventType.KeyDown:
         echo "Keydown"
         globals.handleInput(toInput(event.evKeyboard.keysym.scancode, cast[
             Keymod](event.evKeyboard.keysym.modstate)))
