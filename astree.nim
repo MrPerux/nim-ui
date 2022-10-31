@@ -76,6 +76,7 @@ type TreeNode* = ref object
     of FunctionDefinition:
         function_definition_identifier: TreeNode
 
+## Initilization functions
 proc getNewTreeNodeID*(globals: var Globals): TreeNodeID =
     globals.current_tree_node_id = cast[TreeNodeID](cast[cint](globals.current_tree_node_id) + 1)
     return globals.current_tree_node_id
@@ -103,38 +104,38 @@ proc initIdentifier*(globals: var Globals, identifier_id: IdentifierID): TreeNod
         identifier_terminal: terminalTreeNode,
     )
     terminalTreeNode.parent = some(result)
+proc initFunctionCall*(globals: var Globals, function_value: TreeNode, parameters: seq[TreeNode]): TreeNode =
+    result = TreeNode(
+        tree_node_id: getNewTreeNodeID(globals),
+        kind: FunctionCall,
+        function_value: function_value,
+        parameters: parameters,
+    )
+    function_value.parent = some(result)
+    for child in parameters:
+        child.parent = some(result)
+proc initTopLevelStatementList*(globals: var Globals, top_level_statements: seq[TreeNode]): TreeNode =
+    result = TreeNode(
+        tree_node_id: getNewTreeNodeID(globals),
+        kind: TopLevelStatementList,
+        top_level_statements: top_level_statements,
+    )
+    for child in top_level_statements:
+        child.parent = some(result)
+proc initFunctionDefinition*(globals: var Globals, function_definition_identifier: TreeNode): TreeNode =
+    result = TreeNode(
+        tree_node_id: getNewTreeNodeID(globals),
+        kind: FunctionDefinition,
+        function_definition_identifier: function_definition_identifier,
+    )
+    function_definition_identifier.parent = some(result)
 
 ## Example tree.
 proc initTestTree*(globals: var Globals): TreeNode =
-    result = TreeNode(
-        tree_node_id: getNewTreeNodeID(globals),
-        parent: none[TreeNode](),
-        kind: TopLevelStatementList,
-        top_level_statements: @[],
-    )
-
-    let identifier_id1 = getNewIdentifierNodeID(globals, "print")
-    let identifier_id2 = getNewIdentifierNodeID(globals, "launch my rockets, Carl!")
-
-    let function_value_identifier = initIdentifier(globals, identifier_id1)
-    let statement1 = TreeNode(
-        tree_node_id: getNewTreeNodeID(globals),
-        parent: some(result),
-        kind: FunctionCall,
-        function_value: function_value_identifier
-    )
-    function_value_identifier.parent = some(statement1)
-
-    let function_def_identifier = initIdentifier(globals, identifier_id2)
-    let statement2 = TreeNode(
-        tree_node_id: getNewTreeNodeID(globals),
-        parent: some(result),
-        kind: FunctionDefinition,
-        function_definition_identifier: function_def_identifier
-    )
-    function_def_identifier.parent = some(statement2)
-
-    result.top_level_statements = @[statement1, statement2]
+    initTopLevelStatementList(globals, @[
+        initFunctionCall(globals, initIdentifier(globals, getNewIdentifierNodeID(globals, "print")), @[]),
+        initFunctionDefinition(globals, initIdentifier(globals, getNewIdentifierNodeID(globals, "launch my rockets, Carl!"))),
+    ])
 
 proc treeToHorizontalHorizontalLayouts*(tree: TreeNode): seq[MyHorizontalLayout] =
     result = @[]
