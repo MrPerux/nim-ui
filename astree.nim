@@ -29,6 +29,11 @@ proc getText(obj: MyTextForNode, globals: Globals): string =
 func calculateSize*(obj: MyTextForNode, globals: Globals): Pos =
     pos(10 * cast[cint](obj.getText(globals).len()), 20)
 method draw*(obj: MyTextForNode, globals: Globals, position: Pos, renderer: RendererPtr) =
+    if obj.is_hovered:
+        const padding = 0
+        var bounding_box = rect(position.x - padding, position.y - padding, obj.size.x + padding * 2, obj.size.y + padding * 2)
+        renderer.setDrawColor(90, 90, 160, 255)
+        renderer.fillRect(bounding_box)
     case obj.terminal.terminal_kind:
     of WorkingOn:
         drawText(renderer, globals.font, cstring(obj.getText(globals)), color(140, 240, 140, 255), position.x, position.y)
