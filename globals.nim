@@ -48,10 +48,10 @@ type Globals* = object
     floaters*: seq[UIObject]
 
     font*: FontPtr
+    typing_tree_node*: Option[TreeNode]
 
-    selected_text_object*: Option[UIObject]
-
-    text_lines*: seq[UIObject]
+    root_tree*: TreeNode
+    horizontal_layouts*: seq[UIObject]
 
     current_tree_node_id*: TreeNodeID
     current_identifier_id*: IdentifierID

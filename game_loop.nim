@@ -12,6 +12,8 @@ import sdl_stuff
 import ui_objects
 import globals
 
+import std/tables
+
 import std/options
 
 import astree
@@ -40,47 +42,56 @@ proc handleInput(globals: var Globals, input: Input) =
         globals.debug_draw_frame_counter = not globals.debug_draw_frame_counter
 
     # Ascii typing
-    if globals.selected_text_object.isSome and input.kind == InputKind.Keydown and input.is_ascii == true:
-        var myKeywordText = cast[MyKeywordText](globals.selected_text_object.get())
-        myKeywordText.text &= input.character
-        myKeywordText.recalculateSizeAfterTextChange()
+    if globals.typing_tree_node.isSome and input.kind == InputKind.Keydown and input.is_ascii == true:
+        var tree = globals.typing_tree_node.get()
+        case tree.kind:
+        of IdentifierNode:
+            globals.identifier_texts[tree.identifier_id] &= input.character
+            var obj = tree.identifier_terminal.text_object
+            obj.size = obj.calculateSize(globals)
+            obj.parent.get().onChildSizeChange(obj)
+        else: discard
     # Backspace
-    if globals.selected_text_object.isSome and input.kind == InputKind.Keydown and input.is_ascii == false and
+    if globals.typing_tree_node.isSome and input.kind == InputKind.Keydown and input.is_ascii == false and
             input.scancode == SDL_SCANCODE_BACKSPACE:
-        var myKeywordText = cast[MyKeywordText](globals.selected_text_object.get())
-        if myKeywordText.text.len() > 0:
-            myKeywordText.text = myKeywordText.text[0 ..< ^1]
-
-            let character_left = myKeywordText.text.len() > 0
-            if not character_left:
-                assert myKeywordText.parent.isSome()
-
-                var parent = myKeywordText.parent.get()
-                if myKeywordText.sibling_index > 0:
-                    parent.children.delete(myKeywordText.sibling_index)
-                    globals.selected_text_object = some(parent.children[myKeywordText.sibling_index - 1])
-                else:
-                    myKeywordText.recalculateSizeAfterTextChange()
-            else:
-                myKeywordText.recalculateSizeAfterTextChange()
+        var tree = globals.typing_tree_node.get()
+        case tree.kind:
+        of IdentifierNode:
+            if globals.identifier_texts[tree.identifier_id].len() > 0:
+                globals.identifier_texts[tree.identifier_id] = globals.identifier_texts[tree.identifier_id][0 ..< ^1]
+                var obj = tree.identifier_terminal.text_object
+                obj.size = obj.calculateSize(globals)
+                obj.parent.get().onChildSizeChange(obj)
+        else: discard
     # Enter
-    if globals.selected_text_object.isSome and input.kind == InputKind.Keydown and input.is_ascii == false and
+    if globals.typing_tree_node.isSome and input.kind == InputKind.Keydown and input.is_ascii == false and
             input.scancode == SDL_SCANCODE_RETURN:
-        let myHorizontalTextBoy = MyHorizontalLayout(
-            relative_pos: pos(globals.text_lines[^1].relative_pos.x, globals.text_lines[^1].relative_pos.y + 20),
-            is_visible_or_interactable: true,
-            is_float: true
-        )
-        let myKeywordText = MyKeywordText(
-            text: "",
-            is_visible_or_interactable: true,
-        )
-        myKeywordText.recalculateSizeAfterTextChange()
-        myHorizontalTextBoy.addChild(myKeywordText)
-        myHorizontalTextBoy.recalculateLayout()
-        globals.floaters.add(myHorizontalTextBoy)
-        globals.text_lines.add(myHorizontalTextBoy)
-        globals.selected_text_object = some[UIObject](myKeywordText)
+        var tree = globals.typing_tree_node.get()
+        case tree.kind:
+        of IdentifierNode:
+            assert globals.root_tree.kind == TopLevelStatementList
+            let f = initFunctionCall(globals, initIdentifier(globals, getNewIdentifierNodeID(globals, "exit")), @[initIdentifier(globals, getNewIdentifierNodeID(globals, "exit_code"))])
+            globals.root_tree.top_level_statements.add(f)
+            f.parent = some(globals.root_tree)
+
+            var new_floaters: seq[UIObject] = @[]
+            for h in globals.floaters:
+                if not (h in globals.horizontal_layouts):
+                    new_floaters.add(h)
+            globals.horizontal_layouts = cast[seq[UIObject]](treeToHorizontalHorizontalLayouts(globals.root_tree))
+            globals.floaters = new_floaters
+
+            for h in globals.horizontal_layouts:
+                let hor = cast[MyHorizontalLayout](h)
+                globals.floaters.add(hor)
+                for child in hor.children:
+                    if child of MyKeywordText:
+                        child.size = cast[MyKeywordText](child).calculateSize()
+                    if child of MyTextForNode:
+                        child.size = cast[MyTextForNode](child).calculateSize(globals)
+                hor.recalculateLayout()
+
+        else: discard
     echo $input
 
 
@@ -130,11 +141,11 @@ proc main =
     myPopup.recalculateSizeAfterClickedTimesChange()
     globals.floaters.add(myPopup)
 
-    let rootTree = initTestTree(globals)
-    let f = treeToHorizontalHorizontalLayouts(rootTree)
-    for hor in f:
+    globals.root_tree = initTestTree(globals)
+    globals.horizontal_layouts = cast[seq[UIObject]](treeToHorizontalHorizontalLayouts(globals.root_tree))
+    for h in globals.horizontal_layouts:
+        let hor = cast[MyHorizontalLayout](h)
         globals.floaters.add(hor)
-        globals.text_lines.add(hor)
         for child in hor.children:
             if child of MyKeywordText:
                 child.size = cast[MyKeywordText](child).calculateSize()
@@ -156,6 +167,10 @@ proc main =
         previousCounter: uint64
 
         frame_counter: cint
+
+    globals.typing_tree_node = some(globals.root_tree.top_level_statements[0].function_value)
+    for i in 0..40:
+        globals.handleInput(Input(kind: InputKind.Keydown, scancode: SDL_SCANCODE_RETURN))
 
 
     # Start gameloop
