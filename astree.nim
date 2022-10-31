@@ -11,10 +11,6 @@ import std/tables
 {.experimental: "codeReordering".}
 
 ## UI Part
-type MyTextForNode* = ref object of UIObject
-    text: Option[string]
-    terminal: TreeNode
-
 proc getText(obj: MyTextForNode, globals: Globals): string =
     case obj.terminal.terminal_kind:
     of WorkingOn:
@@ -52,40 +48,6 @@ method onMouseEnter*(obj: MyTextForNode) = discard
 method onMouseExit*(obj: MyTextForNode) = discard
 method onChildSizeChange*(parent: MyTextForNode, child: UIObject) = discard
 
-## Tree part
-type TerminalKind* = enum
-    WorkingOn
-    IdentifierTerminal
-    IntLiteral
-
-type TreeNodeKind* = enum
-    FunctionCall
-    Terminal
-    IdentifierNode
-    TopLevelStatementList
-    FunctionDefinition
-
-type TreeNode* = ref object
-    tree_node_id*: TreeNodeID
-    parent*: Option[TreeNode]
-    case kind*: TreeNodeKind:
-    of FunctionCall:
-        function_value*: TreeNode
-        parameters*: seq[TreeNode]
-    of Terminal:
-        text_object*: MyTextForNode
-        case terminal_kind*: TerminalKind:
-        of WorkingOn:
-            working_on_kind: TreeNodeKind
-        else:
-            discard
-    of IdentifierNode:
-        identifier_id*: IdentifierID
-        identifier_terminal*: TreeNode
-    of TopLevelStatementList:
-        top_level_statements*: seq[TreeNode]
-    of FunctionDefinition:
-        function_definition_identifier: TreeNode
 
 ## Initilization functions
 proc getNewTreeNodeID*(globals: var Globals): TreeNodeID =

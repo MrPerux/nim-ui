@@ -60,3 +60,42 @@ type Globals* = object
     debug_should_render_hovered_objects*: bool
     debug_draw_frame_counter*: bool
 
+
+## ASTree types
+type MyTextForNode* = ref object of UIObject
+    text*: Option[string]
+    terminal*: TreeNode
+
+type TerminalKind* = enum
+    WorkingOn
+    IdentifierTerminal
+    IntLiteral
+
+type TreeNodeKind* = enum
+    FunctionCall
+    Terminal
+    IdentifierNode
+    TopLevelStatementList
+    FunctionDefinition
+
+type TreeNode* = ref object
+    tree_node_id*: TreeNodeID
+    parent*: Option[TreeNode]
+    case kind*: TreeNodeKind:
+    of FunctionCall:
+        function_value*: TreeNode
+        parameters*: seq[TreeNode]
+    of Terminal:
+        text_object*: MyTextForNode
+        case terminal_kind*: TerminalKind:
+        of WorkingOn:
+            working_on_kind: TreeNodeKind
+        else:
+            discard
+    of IdentifierNode:
+        identifier_id*: IdentifierID
+        identifier_terminal*: TreeNode
+    of TopLevelStatementList:
+        top_level_statements*: seq[TreeNode]
+    of FunctionDefinition:
+        function_definition_identifier*: TreeNode
