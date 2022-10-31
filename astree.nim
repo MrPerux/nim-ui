@@ -104,6 +104,7 @@ proc initIdentifier*(globals: var Globals, identifier_id: IdentifierID): TreeNod
     )
     terminalTreeNode.parent = some(result)
 
+## Example tree.
 proc initTestTree*(globals: var Globals): TreeNode =
     result = TreeNode(
         tree_node_id: getNewTreeNodeID(globals),
