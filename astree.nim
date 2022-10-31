@@ -36,7 +36,13 @@ method draw*(obj: MyTextForNode, globals: Globals, position: Pos, renderer: Rend
         drawText(renderer, globals.font, cstring(obj.getText(globals)), color(240, 140, 240, 255), position.x, position.y)
     of IntLiteral:
         drawText(renderer, globals.font, cstring(obj.getText(globals)), color(240, 140, 140, 255), position.x, position.y)
-method onClick*(obj: MyTextForNode): bool = discard
+method onClick*(obj: MyTextForNode, globals: var Globals): bool = 
+    if obj.terminal.terminal_kind == IdentifierTerminal:
+        let id: IdentifierID = obj.terminal.parent.get().identifier_id
+        globals.identifier_texts[id] &= "CLicK"
+        obj.size = obj.calculateSize(globals)
+        obj.parent.get().onChildSizeChange(obj)
+        return true
 method onMouseEnter*(obj: MyTextForNode) = discard
 method onMouseExit*(obj: MyTextForNode) = discard
 method onChildSizeChange*(parent: MyTextForNode, child: UIObject) = discard
