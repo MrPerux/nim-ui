@@ -27,6 +27,8 @@ proc draw(globals: Globals, renderer: RendererPtr, font: FontPtr, dt: float32) =
 proc handleInput(globals: var Globals, input: Input) =
     if input.kind == None:
         return
+
+    # Debug keybinds
     if input.kind == InputKind.Keydown and input.is_ascii == false and input.mod_ctrl and input.scancode ==
             Scancode.SDL_SCANCODE_C:
         globals.running = false
@@ -37,10 +39,12 @@ proc handleInput(globals: var Globals, input: Input) =
             Scancode.SDL_SCANCODE_F:
         globals.debug_draw_frame_counter = not globals.debug_draw_frame_counter
 
+    # Ascii typing
     if globals.selected_text_object.isSome and input.kind == InputKind.Keydown and input.is_ascii == true:
         var myKeywordText = cast[MyKeywordText](globals.selected_text_object.get())
         myKeywordText.text &= input.character
         myKeywordText.recalculateSizeAfterTextChange()
+    # Backspace
     if globals.selected_text_object.isSome and input.kind == InputKind.Keydown and input.is_ascii == false and
             input.scancode == SDL_SCANCODE_BACKSPACE:
         var myKeywordText = cast[MyKeywordText](globals.selected_text_object.get())
@@ -59,7 +63,7 @@ proc handleInput(globals: var Globals, input: Input) =
                     myKeywordText.recalculateSizeAfterTextChange()
             else:
                 myKeywordText.recalculateSizeAfterTextChange()
-
+    # Enter
     if globals.selected_text_object.isSome and input.kind == InputKind.Keydown and input.is_ascii == false and
             input.scancode == SDL_SCANCODE_RETURN:
         let myHorizontalTextBoy = MyHorizontalLayout(
