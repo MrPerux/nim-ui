@@ -202,7 +202,7 @@ proc main =
                 var i = globals.hovered.len() - 1
                 while i >= 0:
                     # Check if the object 'catches' the click
-                    if globals.hovered[i].onClick():
+                    if globals.hovered[i].onClick(globals):
                         break
                     dec(i)
 

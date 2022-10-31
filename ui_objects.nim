@@ -33,7 +33,7 @@ proc getElementsContaining*(output: var seq[UIObject], obj: UIObject, relative_p
 
 ## UI Object virtual methods
 method draw*(obj: UIObject, globals: Globals, position: Pos, renderer: RendererPtr) {.base.} = discard
-method onClick*(obj: UIObject): bool {.base.} = discard
+method onClick*(obj: UIObject, globals: var Globals): bool {.base.} = discard
 method onMouseEnter*(obj: UIObject) {.base.} = discard
 method onMouseExit*(obj: UIObject) {.base.} = discard
 method onChildSizeChange*(parent: UIObject, child: UIObject) {.base.} = discard
@@ -89,7 +89,7 @@ method draw*(obj: MyPopup, globals: Globals, position: Pos, renderer: RendererPt
     drawText(renderer, globals.font, cstring($obj.clicked_times), color(14, 14, 14, 255), position.x + 4, position.y + 4)
     discard
 
-method onClick*(obj: MyPopup): bool =
+method onClick*(obj: MyPopup, globals: var Globals): bool =
     echo "CLICKED POPUP"
     obj.clicked_times += 1
     obj.recalculateSizeAfterClickedTimesChange()
@@ -131,7 +131,7 @@ method draw*(obj: MyIcon, globals: Globals, position: Pos, renderer: RendererPtr
         discard obj.icon_surface.setTextureColorMod(13, 26, 31)
         renderer.copy obj.icon_surface, nil, addr r
 
-method onClick*(obj: MyIcon): bool =
+method onClick*(obj: MyIcon, globals: var Globals): bool =
     echo "CLICKED ICON"
     var sidebar = cast[MySidebar](obj.parent.get())
     for icon in sidebar.icons:
@@ -153,7 +153,7 @@ method draw*(obj: MySidebar, globals: Globals, position: Pos, renderer: Renderer
         let y = child.relative_pos.y + position.y
         child.draw(globals, pos(x, y), renderer)
 
-method onClick*(obj: MySidebar): bool =
+method onClick*(obj: MySidebar, globals: var Globals): bool =
     echo "CLICKED SIDEBAR"
 
 
@@ -192,7 +192,7 @@ method draw*(obj: MyRoot, globals: Globals, position: Pos, renderer: RendererPtr
         position.y + obj.size.y - 30)
 
 
-method onClick*(obj: MyRoot): bool =
+method onClick*(obj: MyRoot, globals: var Globals): bool =
     discard
 
 
