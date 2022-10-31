@@ -41,6 +41,7 @@ method onChildSizeChange*(parent: UIObject, child: UIObject) {.base.} = discard
 
 ### Custom UI elements
 
+## Horizontal Layouter UI Element
 type MyHorizontalLayout* = ref object of UIObject
     discard
 method onChildSizeChange*(parent: MyHorizontalLayout, child: UIObject) =
@@ -61,7 +62,7 @@ method draw*(obj: MyHorizontalLayout, globals: Globals, position: Pos, renderer:
         child.draw(globals, pos(x, y), renderer)
 
 
-## Keyword Text UI element
+## Keyword Text UI Element
 type MyKeywordText* = ref object of UIObject
     text*: string
 func calculateSize*(obj: MyKeywordText): Pos =
@@ -76,7 +77,7 @@ method draw*(obj: MyKeywordText, globals: Globals, position: Pos, renderer: Rend
     drawText(renderer, globals.font, cstring(obj.text), color(240, 140, 140, 255), position.x, position.y)
 
 
-## Example Pop-up UI element
+## Example Pop-up UI Element
 type MyPopup* = ref object of UIObject
     clicked_times*: cint
 method draw*(obj: MyPopup, globals: Globals, position: Pos, renderer: RendererPtr) =
@@ -110,7 +111,7 @@ proc recalculateSizeAfterClickedTimesChange*(obj: MyPopup) =
         if obj.parent.isSome:
             onChildSizeChange(obj.parent.get(), obj)
 
-## Icon UI element
+## Icon UI Element
 type MyIcon* = ref object of UIObject
     is_active: bool
     icon_surface: TexturePtr
@@ -156,7 +157,7 @@ method onClick*(obj: MySidebar): bool =
     echo "CLICKED SIDEBAR"
 
 
-## Root UI element
+## Root UI Element
 type MyRoot* = ref object of UIObject
     sidebar: MySidebar
     text: string
@@ -195,7 +196,7 @@ method onClick*(obj: MyRoot): bool =
     discard
 
 
-### Initializing procedures for ui elements
+### Initializing procedures for UI Elements
 proc loadIcon(renderer: RendererPtr, file: cstring): TexturePtr =
     let surface = load(file)
     var pixels = cast [ptr array[0..(512*512), uint32]](surface.pixels)
