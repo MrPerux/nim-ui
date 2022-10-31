@@ -8,6 +8,7 @@ import globals
 
 {.experimental: "codeReordering".}
 
+## UI Object helper functions
 proc addChild*(parent: UIObject, new_child: UIObject) =
     new_child.sibling_index = cast[cint](parent.children.len())
     new_child.parent = some(parent)
@@ -17,14 +18,6 @@ func getAbsolutePosition*(obj: UIObject): Pos =
         return obj.relative_pos + getAbsolutePosition(obj.parent.get())
     else:
         return obj.relative_pos
-method draw*(obj: UIObject, globals: Globals, position: Pos, renderer: RendererPtr) {.base.} = discard
-method onClick*(obj: UIObject): bool {.base.} = discard
-
-method onMouseEnter*(obj: UIObject) {.base.} = discard
-method onMouseExit*(obj: UIObject) {.base.} = discard
-
-method onChildSizeChange*(parent: UIObject, child: UIObject) {.base.} = discard
-
 proc getElementsContaining*(output: var seq[UIObject], obj: UIObject, relative_pos: Pos) =
     if not obj.is_visible_or_interactable:
         return
@@ -37,6 +30,13 @@ proc getElementsContaining*(output: var seq[UIObject], obj: UIObject, relative_p
         output.add(obj)
         for child in obj.children:
             getElementsContaining(output, child, relative_pos - child.relative_pos)
+
+## UI Object virtual methods
+method draw*(obj: UIObject, globals: Globals, position: Pos, renderer: RendererPtr) {.base.} = discard
+method onClick*(obj: UIObject): bool {.base.} = discard
+method onMouseEnter*(obj: UIObject) {.base.} = discard
+method onMouseExit*(obj: UIObject) {.base.} = discard
+method onChildSizeChange*(parent: UIObject, child: UIObject) {.base.} = discard
 
 
 ### Custom UI elements
