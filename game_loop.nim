@@ -14,6 +14,8 @@ import globals
 
 import std/options
 
+import astree
+
 import os
 
 proc draw(globals: Globals, renderer: RendererPtr, font: FontPtr, dt: float32) =
@@ -124,24 +126,17 @@ proc main =
     myPopup.recalculateSizeAfterClickedTimesChange()
     globals.floaters.add(myPopup)
 
-    let myHorizontalTextBoy = MyHorizontalLayout(
-        relative_pos: pos(400, 300),
-        is_visible_or_interactable: true,
-        is_float: true
-    )
-    let a = ["let", " ", "something", " ", "=", " ", "yeah!"]
-    for t in a:
-        let myKeywordText = MyKeywordText(
-            text: t,
-            is_visible_or_interactable: true,
-        )
-        myKeywordText.recalculateSizeAfterTextChange()
-        myHorizontalTextBoy.addChild(myKeywordText)
-    myHorizontalTextBoy.recalculateLayout()
-    globals.floaters.add(myHorizontalTextBoy)
-
-    globals.selected_text_object = some(myHorizontalTextBoy.children[2])
-    globals.text_lines.add(myHorizontalTextBoy)
+    let rootTree = initTestTree(globals)
+    let f = treeToHorizontalHorizontalLayouts(rootTree)
+    for hor in f:
+        globals.floaters.add(hor)
+        globals.text_lines.add(hor)
+        for child in hor.children:
+            if child of MyKeywordText:
+                child.size = cast[MyKeywordText](child).calculateSize()
+            if child of MyTextForNode:
+                child.size = cast[MyTextForNode](child).calculateSize(globals)
+        hor.recalculateLayout()
 
     # Setup font
     let font = ttf.openFont("Hack Regular Nerd Font Complete.ttf", 16)

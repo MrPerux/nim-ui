@@ -1,6 +1,8 @@
 import std/options
 import sdl2/ttf
 
+import std/tables
+
 {.experimental: "codeReordering".}
 
 # every object (position) has a global position
@@ -20,6 +22,12 @@ proc `+`*(a: Pos, b: Pos): Pos =
 proc `-`*(a: Pos, b: Pos): Pos =
     pos(a.x - b.x, a.y - b.y)
 
+
+type IdentifierID* = distinct cint
+type TreeNodeID* = distinct cint
+
+proc `==` *(a, b: IdentifierID): bool {.borrow.}
+proc `==` *(a, b: TreeNodeID): bool {.borrow.}
 
 ### Base objects for UI elements
 type UIObject* = ref object of RootObj
@@ -44,6 +52,10 @@ type Globals* = object
     selected_text_object*: Option[UIObject]
 
     text_lines*: seq[UIObject]
+
+    current_tree_node_id*: TreeNodeID
+    current_identifier_id*: IdentifierID
+    identifier_texts*: Table[IdentifierID, string]
 
     debug_should_render_hovered_objects*: bool
     debug_draw_frame_counter*: bool
