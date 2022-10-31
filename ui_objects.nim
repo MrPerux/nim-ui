@@ -25,20 +25,6 @@ method onMouseExit*(obj: UIObject) {.base.} = discard
 
 method onChildSizeChange*(parent: UIObject, child: UIObject) {.base.} = discard
 
-proc privateOnClick*(obj: UIObject, relative_pos: Pos) =
-    let is_in_obj_bounding_box = (
-        relative_pos.x >= 0 and obj.size.x > relative_pos.x
-    ) and (
-        relative_pos.y >= 0 and obj.size.y > relative_pos.y
-    )
-    if is_in_obj_bounding_box:
-        if obj.onClick():
-            return
-    for child in obj.children:
-        if child.is_visible_or_interactable:
-            privateOnClick(child, relative_pos - child.relative_pos)
-
-
 proc getElementsContaining*(output: var seq[UIObject], obj: UIObject, relative_pos: Pos) =
     if not obj.is_visible_or_interactable:
         return
