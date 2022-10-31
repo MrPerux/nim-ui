@@ -64,8 +64,10 @@ method draw*(obj: MyHorizontalLayout, globals: Globals, position: Pos, renderer:
 ## Keyword Text UI element
 type MyKeywordText* = ref object of UIObject
     text*: string
+func calculateSize*(obj: MyKeywordText): Pos =
+    pos(10 * cast[cint](obj.text.len()), 20)
 proc recalculateSizeAfterTextChange*(obj: MyKeywordText) =
-    let new_size = pos(10 * cast[cint](obj.text.len()), 20)
+    let new_size = obj.calculateSize()
     if obj.size != new_size:
         obj.size = new_size
         if obj.parent.isSome:
