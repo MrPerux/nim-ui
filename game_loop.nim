@@ -98,7 +98,7 @@ proc handleInput(globals: var Globals, input: Input) =
 
 proc main =
     let WIDTH: cint = if existsEnv("WSL_INTEROP"): 2560 else: 1920
-    let HEIGHT: cint = if existsEnv("WSL_INTEROP"): 1440 else: 1023
+    let HEIGHT: cint = if existsEnv("WSL_INTEROP"): 1440 else: 1053
     var globals = Globals(running: true, width: WIDTH, height: HEIGHT)
 
     # SDL Stuff
