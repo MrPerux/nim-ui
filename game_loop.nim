@@ -17,6 +17,7 @@ import std/tables
 import std/options
 
 import astree
+import math
 
 import os
 
@@ -167,6 +168,7 @@ proc main =
         previousCounter: uint64
 
         frame_counter: cint
+        last_frame_times: seq[float32]
 
     globals.typing_tree_node = some(globals.root_tree.top_level_statements[0].function_value)
     for i in 0..40:
@@ -180,6 +182,9 @@ proc main =
         counter = getPerformanceCounter()
 
         dt = (counter - previousCounter).float / getPerformanceFrequency().float
+        last_frame_times.add(dt)
+        if last_frame_times.len > 30:
+            last_frame_times.delete(0)
 
         var event = defaultEvent
 
@@ -242,6 +247,10 @@ proc main =
         if globals.debug_draw_frame_counter:
             drawText(renderer, font, cstring("Frame #" & $frame_counter), color(255, 255, 255, 255), myRoot.size.x -
                     200, 10)
+                    
+        var current_fps = last_frame_times.len.toFloat / last_frame_times.sum
+        drawText(renderer, font, cstring("FPS: " & $current_fps.toInt), color(255, 255, 255, 255), (30 - 16) div 2, globals.height - 16 - (30 - 16) div 2)
+
         renderer.present()
 
         frame_counter += 1
